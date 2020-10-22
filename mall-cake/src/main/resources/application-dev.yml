@@ -1,0 +1,10 @@
+logging:
+  level:
+    com.github.tanyueran: debug
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
+        server-addr: 192.168.150.130

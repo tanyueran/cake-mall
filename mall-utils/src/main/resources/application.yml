@@ -1,0 +1,14 @@
+server:
+  port: 3000
+  servlet:
+    context-path: /utils
+
+
+spring:
+  application:
+    name: mall-utils
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB

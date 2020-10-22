@@ -1,0 +1,25 @@
+#minio的配置
+minio:
+  url: http://192.168.150.131:9000
+  bucket: cake-mall
+  accessKey: minioadmin
+  secretKey: minioadmin
+
+self:
+  # 终端id
+  serviceId: 1
+  # 数据中心id
+  dataId: 1
+
+logging:
+  level:
+    com.github.tanyueran: info
+  file:
+    path: /var/logs/mall-utils
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
+        server-addr: 192.168.150.130

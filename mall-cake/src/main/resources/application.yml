@@ -1,0 +1,11 @@
+server:
+  port: 3001
+  servlet:
+    context-path: /cake
+
+
+spring:
+  application:
+    name: mall-cake
+  profiles:
+    active: dev
