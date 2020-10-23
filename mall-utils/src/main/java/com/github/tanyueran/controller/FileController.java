@@ -4,6 +4,8 @@ import cn.hutool.core.lang.Snowflake;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.minio.*;
 import io.minio.errors.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 @RequestMapping("/file")
 @RestController
+@Api(tags = "FileController", description = "文件操作")
 public class FileController {
 
     @Autowired
@@ -33,6 +36,7 @@ public class FileController {
     private String bucket;
 
     @PostMapping("/upload")
+    @ApiOperation("文件上传")
     public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         InputStream inputStream = file.getInputStream();
         long l = snowflake.nextId();
@@ -48,6 +52,7 @@ public class FileController {
     }
 
     @GetMapping("/preview")
+    @ApiOperation("文件预览")
     public void preview(@RequestParam("fileId") String fileId, HttpServletResponse response)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         GetObjectArgs args = GetObjectArgs.builder().bucket(bucket).object(fileId).build();
@@ -57,6 +62,7 @@ public class FileController {
     }
 
     @DeleteMapping("/delete")
+    @ApiOperation("文件删除")
     public Boolean deleteFile(@RequestParam("fileId") String fileId) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         DeleteObjectTagsArgs arg = DeleteObjectTagsArgs.builder().bucket(bucket).object(fileId).build();
         minioClient.deleteObjectTags(arg);
@@ -64,6 +70,7 @@ public class FileController {
     }
 
     @GetMapping("/download")
+    @ApiOperation("文件下载")
     public void download(@RequestParam("fileId") String fileId, HttpServletResponse response)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         GetObjectArgs args = GetObjectArgs.builder().bucket(bucket).object(fileId).build();

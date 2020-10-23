@@ -9,4 +9,15 @@ spring:
     nacos:
       discovery:
         namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
-        server-addr: 192.168.150.130
+        server-addr: 192.168.150.130:8848
+  redis:
+    host: 192.168.150.128
+    port: 6379
+    database: 1
+    password: password
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.150.128:3306/cake-mall
+      username: root
+      password: password

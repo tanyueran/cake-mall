@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-@ControllerAdvice
+@ControllerAdvice(basePackages = "com.github.tanyueran.controller")
 @Slf4j
 public class ControllerHandler implements ResponseBodyAdvice {
 

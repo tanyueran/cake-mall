@@ -1,7 +1,7 @@
 package com.github.tanyueran.controller;
 
 import cn.hutool.core.lang.Snowflake;
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/id")
-@Slf4j
+@Api(tags = "IdUtilsController", description = "id生成器")
 public class IdUtilsController {
 
     @Autowired

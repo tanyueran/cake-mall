@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/10/21 14:09:54                          */
+/* Created on:     2020/10/23 9:57:20                           */
 /*==============================================================*/
 
 
@@ -115,8 +115,9 @@ create table cake_user
    nickname             varchar(255) comment '昵称',
    user_name            varchar(255) comment '用户姓名',
    head_img             varchar(255) comment '头像',
-   user_code            varchar(255) comment '用户账号',
-   user_pwd             varchar(255) comment '用户密码',
+   user_code            varchar(255) not null comment '用户账号',
+   user_pwd             varchar(255) not null comment '用户密码',
+   money                double comment '账户金额',
    remark               varchar(255) comment '备注',
    create_time          datetime default CURRENT_TIMESTAMP comment '创建时间',
    update_time          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '更新时间',

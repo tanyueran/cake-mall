@@ -1,0 +1,39 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: mall-gateway
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      routes:
+        # 常用的工具服务
+        - id: utils
+          uri: lb://mall-utils
+          predicates:
+            - Path=/utils/**
+          filters:
+            - RewritePath=/utils/(?<segment>.*), /$\{segment}
+        # 用户模块
+        - id: user
+          uri: lb://maill-user
+          predicates:
+            - Path=/user/**
+          filters:
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
+        # 蛋糕模块
+        - id: cake
+          uri: lb://mall-cake
+          predicates:
+            - Path=/cake/**
+          filters:
+            - RewritePath=/cake/(?<segment>.*), /$\{segment}
+        # 订单模块
+        - id: order
+          uri: lb://mall-order
+          predicates:
+            - Path=/order/**
+          filters:
+            - RewritePath=/order/(?<segment>.*), /$\{segment}
