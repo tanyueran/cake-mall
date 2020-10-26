@@ -1,5 +1,6 @@
 package com.github.tanyueran.log;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -40,7 +41,7 @@ public class WebLogAspect {
     public void doAfterReturning(Object ret) throws Throwable {
         // 处理完请求，返回内容
         log.info("========================返回内容========================");
-        log.info("RESPONSE : " + ret);
+        log.info("RESPONSE : " + JSONObject.toJSON(ret));
         log.info("========================返回内容========================");
     }
 }

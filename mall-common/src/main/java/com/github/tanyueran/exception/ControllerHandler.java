@@ -3,14 +3,18 @@ package com.github.tanyueran.exception;
 import com.github.tanyueran.entity.ResponseResult;
 import com.github.tanyueran.entity.ResponseResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import java.util.stream.Collectors;
 
 @ControllerAdvice(basePackages = "com.github.tanyueran.controller")
 @Slf4j
@@ -40,6 +44,18 @@ public class ControllerHandler implements ResponseBodyAdvice {
         ResponseResult result = new ResponseResult();
         result.setCode(ResponseResultCode.FAILED.getCode());
         result.setMsg(e.getMessage());
+        result.setData(null);
+        return result;
+    }
+
+    // 请求参数异常
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public ResponseResult runtimeException(MethodArgumentNotValidException e) {
+        exceptionLog(e);
+        ResponseResult result = new ResponseResult();
+        result.setCode(ResponseResultCode.FAILED.getCode());
+        result.setMsg(e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining()));
         result.setData(null);
         return result;
     }

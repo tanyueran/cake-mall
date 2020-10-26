@@ -1,8 +1,10 @@
 package com.github.tanyueran.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 @Data
+@ApiModel("响应结果对象")
 public class ResponseResult {
     // 状态码
     private Integer code;

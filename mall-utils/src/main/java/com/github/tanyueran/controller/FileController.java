@@ -1,7 +1,6 @@
 package com.github.tanyueran.controller;
 
 import cn.hutool.core.lang.Snowflake;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.minio.*;
 import io.minio.errors.*;
 import io.swagger.annotations.Api;
@@ -65,7 +64,8 @@ public class FileController {
     @ApiOperation("文件删除")
     public Boolean deleteFile(@RequestParam("fileId") String fileId) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         DeleteObjectTagsArgs arg = DeleteObjectTagsArgs.builder().bucket(bucket).object(fileId).build();
-        minioClient.deleteObjectTags(arg);
+        minioClient.removeObject(
+                RemoveObjectArgs.builder().bucket(bucket).object(fileId).build());
         return true;
     }
 
