@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: mall-user
+    name: mall-admin
   profiles:
     active: dev
   mvc:
@@ -34,3 +34,10 @@ mybatis:
   configuration:
     # 开启下划线转驼峰
     map-underscore-to-camel-case: true
+
+# 自定义的参数
+self:
+  # 初始化密码
+  password: 000000
+  # 账号保存的redis的前缀
+  user_prefix: MALL-SYS_

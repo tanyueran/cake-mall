@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 @Component
 @Slf4j
 @Order(1)
+@ConditionalOnClass(value = HttpServletRequest.class)
 public class WebLogAspect {
 
     @Pointcut("execution(public * com.github.tanyueran.controller..*.*(..))")

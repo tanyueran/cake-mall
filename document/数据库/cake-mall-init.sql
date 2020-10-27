@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/10/23 9:57:20                           */
+/* Created on:     2020/10/26 14:03:39                          */
 /*==============================================================*/
 
 
@@ -74,7 +74,7 @@ create table cake_product
 (
    id                   bigint not null,
    cake_product_categories_id bigint comment '分类id',
-   name                 varchar(255) comment '蛋糕名称',
+   name                 varchar(255) not null comment '蛋糕名称',
    cake_imgs            varchar(2550) comment '蛋糕图片英文逗号分割，最多五个',
    detail               text comment '蛋糕详情',
    delete_status        int comment '删除状态(0未删除，1删除)',
@@ -118,6 +118,7 @@ create table cake_user
    user_code            varchar(255) not null comment '用户账号',
    user_pwd             varchar(255) not null comment '用户密码',
    money                double comment '账户金额',
+   status               int comment '激活状态（0激活，1冻结）',
    remark               varchar(255) comment '备注',
    create_time          datetime default CURRENT_TIMESTAMP comment '创建时间',
    update_time          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '更新时间',

@@ -1,0 +1,68 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: mall-gateway
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      routes:
+        # 常用的工具服务
+        - id: utils
+          uri: lb://mall-utils
+          predicates:
+            - Path=/utils/**
+          filters:
+            # 去掉路由的第一次前缀
+            - StripPrefix=1
+        # 用户管理模块
+        - id: admin
+          uri: lb://mall-admin
+          predicates:
+            - Path=/admin/**
+          filters:
+            # 去掉路由的第一次前缀
+            - StripPrefix=1
+        # 蛋糕模块
+        - id: cake
+          uri: lb://mall-cake
+          predicates:
+            - Path=/cake/**
+          filters:
+            # 去掉路由的第一次前缀
+            - StripPrefix=1
+        # 订单模块
+        - id: order
+          uri: lb://mall-order
+          predicates:
+            - Path=/order/**
+          filters:
+            # 去掉路由的第一次前缀
+            - StripPrefix=1
+
+# 用于actuator暴露监控指标
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+self:
+  # 账号保存的redis的前缀
+  user_prefix: MALL-SYS_
+
+---
+# 开发环境
+spring:
+  profiles: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.150.130
+        namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
+      config:
+        server-addr: 192.168.150.130
+        namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
+        file-extension: yaml

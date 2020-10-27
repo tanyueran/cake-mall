@@ -19,7 +19,7 @@
         <module>mall-common</module>
         <module>mall-gateway</module>
         <module>mall-generator</module>
-        <module>mall-user</module>
+        <module>mall-admin</module>
         <module>mall-order</module>
         <module>mall-cake</module>
         <module>mall-utils</module>
@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>
-                <version>3.8.3</version>
+                <version>3.11.0</version>
             </dependency>
 
             <!-- swagger2-->

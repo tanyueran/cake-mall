@@ -1,5 +1,6 @@
 package com.github.tanyueran.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,12 +10,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author tanxin
@@ -23,7 +25,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("cake_user")
-@ApiModel(value="CakeUser对象", description="")
+@ApiModel(value = "CakeUser对象", description = "")
 public class CakeUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,6 +35,7 @@ public class CakeUser implements Serializable {
 
     @ApiModelProperty(value = "角色主键")
     @TableField("cake_user_role_id")
+    @NotNull(message = "角色不可为空")
     private Long cakeUserRoleId;
 
     @ApiModelProperty(value = "昵称")
@@ -49,10 +52,12 @@ public class CakeUser implements Serializable {
 
     @ApiModelProperty(value = "用户账号")
     @TableField("user_code")
+    @NotNull(message = "账号不可为空")
     private String userCode;
 
     @ApiModelProperty(value = "用户密码")
     @TableField("user_pwd")
+    @NotNull(message = "密码不可为空")
     private String userPwd;
 
     @ApiModelProperty(value = "账户金额")
@@ -63,12 +68,18 @@ public class CakeUser implements Serializable {
     @TableField("remark")
     private String remark;
 
+    @TableField("status")
+    @ApiModelProperty(value = "激活状态（0激活，1冻结）")
+    private Integer status;
+
     @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
+    @JSONField(format = "yyyy-MM-dd hh:mm:ss")
     private Date createTime;
 
     @ApiModelProperty(value = "更新时间")
     @TableField("update_time")
+    @JSONField(format = "yyyy-MM-dd hh:mm:ss")
     private Date updateTime;
 
 
