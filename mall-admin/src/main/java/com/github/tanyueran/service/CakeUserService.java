@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.tanyueran.dto.LoginDto;
 import com.github.tanyueran.dto.RegisterDto;
 import com.github.tanyueran.entity.CakeUser;
+import com.github.tanyueran.vo.UserInfoVo;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -36,6 +37,15 @@ public interface CakeUserService extends IService<CakeUser> {
     Boolean register(RegisterDto registerDto) throws Exception;
 
     /**
+     * 根据用户账号查询用户信息
+     *
+     * @param userCode 用户账号
+     * @return
+     * @throws Exception
+     */
+    UserInfoVo getUserInfoByUserCode(String userCode) throws Exception;
+
+    /**
      * 添加用户
      *
      * @param cakeUser
@@ -57,7 +67,7 @@ public interface CakeUserService extends IService<CakeUser> {
      * @param userId
      * @return
      */
-    Boolean initUserPwd(Long userId);
+    Boolean initUserPwd(String userId);
 
     /**
      * 用户账号冻结
@@ -65,5 +75,5 @@ public interface CakeUserService extends IService<CakeUser> {
      * @param userId
      * @return
      */
-    Boolean freezeUser(Long userId);
+    Boolean freezeUser(String userId);
 }

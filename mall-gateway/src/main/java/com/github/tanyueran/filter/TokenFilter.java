@@ -22,7 +22,9 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -103,4 +105,5 @@ public class TokenFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return -100;
     }
+
 }

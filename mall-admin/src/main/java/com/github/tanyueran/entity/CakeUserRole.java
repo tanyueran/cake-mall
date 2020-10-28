@@ -34,7 +34,7 @@ public class CakeUserRole implements Serializable {
 
     @TableId(value = "id", type = IdType.INPUT)
     @NotNull(message = "id不可为空")
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "角色code")
     @TableField("role_code")

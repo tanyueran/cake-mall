@@ -66,6 +66,10 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         wrapper.eq("user_code", loginDto.getUsername());
         wrapper.eq("user_pwd", loginDto.getPassword());
         CakeUser user = cakeUserMapper.selectOne(wrapper);
+        if (user == null) {
+            throw new Exception("账号或密码错误");
+        }
+        user.setUserPwd(null);
         CakeUserRole role = cakeUserRoleMapper.selectById(user.getCakeUserRoleId());
         UserInfoVo infoVo = new UserInfoVo();
         infoVo.setCakeUser(user);
@@ -103,6 +107,12 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     }
 
     @Override
+    public UserInfoVo getUserInfoByUserCode(String userCode) throws Exception {
+        UserInfoVo userInfoVo = (UserInfoVo) redisTemplate.opsForValue().get(redis_prefix + userCode);
+        return userInfoVo;
+    }
+
+    @Override
     public Boolean addUser(CakeUser cakeUser) throws Exception {
         cakeUser.setStatus(0);
         // 检测账号是否可以使用
@@ -137,7 +147,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     }
 
     @Override
-    public Boolean initUserPwd(Long userId) {
+    public Boolean initUserPwd(String userId) {
         CakeUser cakeUser = new CakeUser();
         cakeUser.setId(userId);
         cakeUser.setUserPwd(initPasswordStr);
@@ -146,7 +156,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     }
 
     @Override
-    public Boolean freezeUser(Long userId) {
+    public Boolean freezeUser(String userId) {
         CakeUser cakeUser = new CakeUser();
         cakeUser.setId(userId);
         cakeUser.setStatus(1);

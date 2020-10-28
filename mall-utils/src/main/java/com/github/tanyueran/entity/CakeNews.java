@@ -29,15 +29,15 @@ public class CakeNews implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.INPUT)
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "发送方id")
     @TableField("sender_id")
-    private Long senderId;
+    private String senderId;
 
     @ApiModelProperty(value = "接受方id")
     @TableField("receiver_id")
-    private Long receiverId;
+    private String receiverId;
 
     @ApiModelProperty(value = "消息简介")
     @TableField("title")

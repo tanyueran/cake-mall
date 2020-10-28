@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class RegisterDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "昵称")
     private String nickname;

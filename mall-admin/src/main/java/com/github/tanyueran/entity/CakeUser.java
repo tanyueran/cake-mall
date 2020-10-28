@@ -31,12 +31,12 @@ public class CakeUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.INPUT)
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "角色主键")
     @TableField("cake_user_role_id")
     @NotNull(message = "角色不可为空")
-    private Long cakeUserRoleId;
+    private String cakeUserRoleId;
 
     @ApiModelProperty(value = "昵称")
     @TableField("nickname")

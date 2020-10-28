@@ -63,7 +63,6 @@ public class FileController {
     @DeleteMapping("/delete")
     @ApiOperation("文件删除")
     public Boolean deleteFile(@RequestParam("fileId") String fileId) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
-        DeleteObjectTagsArgs arg = DeleteObjectTagsArgs.builder().bucket(bucket).object(fileId).build();
         minioClient.removeObject(
                 RemoveObjectArgs.builder().bucket(bucket).object(fileId).build());
         return true;

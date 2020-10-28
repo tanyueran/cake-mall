@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/10/26 14:03:39                          */
+/* Created on:     2020/10/28 14:41:00                          */
 /*==============================================================*/
 
 
@@ -21,9 +21,9 @@ drop table if exists cake_user_role;
 /*==============================================================*/
 create table cake_news
 (
-   id                   bigint not null,
-   sender_id            bigint comment '发送方id',
-   receiver_id          bigint comment '接受方id',
+   id                   varchar(20) not null,
+   sender_id            varchar(20) comment '发送方id',
+   receiver_id          varchar(20) comment '接受方id',
    title                varchar(30) comment '消息简介',
    message              varchar(255) comment '消息内容',
    is_read              int comment '是否已读（0未读、1已读）',
@@ -39,10 +39,10 @@ alter table cake_news comment '订单消息表';
 /*==============================================================*/
 create table cake_order
 (
-   id                   bigint not null,
-   cake_product_id      bigint comment '蛋糕主键',
-   create_user_id       bigint comment '下单人主键',
-   action_user_id       bigint comment '接单拒单操作人主键',
+   id                   varchar(20) not null,
+   cake_product_id      varchar(20) comment '蛋糕主键',
+   create_user_id       varchar(20) comment '下单人主键',
+   action_user_id       varchar(20) comment '接单拒单操作人主键',
    status               int comment '订单状态(
             0、已下单，未付款；
             5、未付款，订单取消；
@@ -72,8 +72,8 @@ alter table cake_order comment '蛋糕订单表';
 /*==============================================================*/
 create table cake_product
 (
-   id                   bigint not null,
-   cake_product_categories_id bigint comment '分类id',
+   id                   varchar(20) not null,
+   cake_product_categories_id varchar(20) comment '分类id',
    name                 varchar(255) not null comment '蛋糕名称',
    cake_imgs            varchar(2550) comment '蛋糕图片英文逗号分割，最多五个',
    detail               text comment '蛋糕详情',
@@ -83,6 +83,7 @@ create table cake_product
    remark               varchar(255) comment '备注',
    create_time          datetime default CURRENT_TIMESTAMP comment '创建时间',
    update_time          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '更新时间',
+   Column_12            char(10),
    primary key (id)
 );
 
@@ -93,7 +94,7 @@ alter table cake_product comment '蛋糕表';
 /*==============================================================*/
 create table cake_product_categories
 (
-   id                   bigint not null,
+   id                   varchar(20) not null,
    name                 varchar(255) comment '类型名称',
    code                 varchar(255) comment '类型编码',
    remark               varchar(255) comment '备注',
@@ -110,8 +111,8 @@ alter table cake_product_categories comment '蛋糕类型表';
 /*==============================================================*/
 create table cake_user
 (
-   id                   bigint not null,
-   cake_user_role_id    bigint comment '角色主键',
+   id                   varchar(20) not null,
+   cake_user_role_id    varchar(20) comment '角色主键',
    nickname             varchar(255) comment '昵称',
    user_name            varchar(255) comment '用户姓名',
    head_img             varchar(255) comment '头像',
@@ -131,7 +132,7 @@ create table cake_user
 /*==============================================================*/
 create table cake_user_role
 (
-   id                   bigint not null,
+   id                   varchar(20) not null,
    role_code            varchar(255) comment '角色code',
    role_name            varchar(255) comment '角色名称',
    remark               varchar(255) comment '备注',
