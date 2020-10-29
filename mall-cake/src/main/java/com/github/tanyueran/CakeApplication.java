@@ -7,7 +7,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@MapperScan(basePackages = "com.github.tanyueran.mapper")
 public class CakeApplication {
     public static void main(String[] args) {
         SpringApplication.run(CakeApplication.class, args);

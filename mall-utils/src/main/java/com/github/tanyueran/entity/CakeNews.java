@@ -1,5 +1,6 @@
 package com.github.tanyueran.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -53,10 +54,12 @@ public class CakeNews implements Serializable {
 
     @ApiModelProperty(value = "消息发送时间")
     @TableField("create_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     @ApiModelProperty(value = "消息已读时间")
     @TableField("update_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
 

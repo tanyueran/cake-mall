@@ -1,5 +1,6 @@
 package com.github.tanyueran.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -23,7 +24,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("cake_order")
-@ApiModel(value="CakeOrder对象", description="蛋糕订单表")
+@ApiModel(value = "CakeOrder对象", description = "蛋糕订单表")
 public class CakeOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,26 +66,32 @@ public class CakeOrder implements Serializable {
 
     @ApiModelProperty(value = "未付款订单取消时间")
     @TableField("status5_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status5Time;
 
     @ApiModelProperty(value = "付款时间")
     @TableField("status10_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status10Time;
 
     @ApiModelProperty(value = "订单被拒时间")
     @TableField("status15_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status15Time;
 
     @ApiModelProperty(value = "接单时间")
     @TableField("status20_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status20Time;
 
     @ApiModelProperty(value = "发货时间")
     @TableField("status30_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status30Time;
 
     @ApiModelProperty(value = "订单完成时间")
     @TableField("status40_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date status40Time;
 
     @ApiModelProperty(value = "备注")

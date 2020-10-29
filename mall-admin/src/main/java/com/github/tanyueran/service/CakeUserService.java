@@ -1,6 +1,8 @@
 package com.github.tanyueran.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.tanyueran.dto.CakeUserEditDto;
+import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
 import com.github.tanyueran.dto.LoginDto;
 import com.github.tanyueran.dto.RegisterDto;
 import com.github.tanyueran.entity.CakeUser;
@@ -56,10 +58,19 @@ public interface CakeUserService extends IService<CakeUser> {
     /**
      * 编辑用户
      *
-     * @param cakeUser
+     * @param cakeUserEditDto
      * @return
      */
-    Boolean editUser(CakeUser cakeUser) throws Exception;
+    Boolean editUser(CakeUserEditDto cakeUserEditDto) throws Exception;
+
+    /**
+     * 更新用户密码
+     *
+     * @param cakeUserUpdatePwdDto
+     * @return
+     * @throws Exception
+     */
+    Boolean updateUserPwd(CakeUserUpdatePwdDto cakeUserUpdatePwdDto) throws Exception;
 
     /**
      * 初始化用户密码

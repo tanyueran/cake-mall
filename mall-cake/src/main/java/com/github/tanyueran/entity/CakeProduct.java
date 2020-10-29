@@ -1,5 +1,6 @@
 package com.github.tanyueran.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -23,7 +24,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("cake_product")
-@ApiModel(value="CakeProduct对象", description="蛋糕表")
+@ApiModel(value = "CakeProduct对象", description = "蛋糕表")
 public class CakeProduct implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,10 +66,12 @@ public class CakeProduct implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     @ApiModelProperty(value = "更新时间")
     @TableField("update_time")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
 

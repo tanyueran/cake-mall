@@ -35,7 +35,11 @@ public class WebLogAspect {
         log.info("请求Ip:" + request.getRemoteAddr());
         log.info("请求方法：" + request.getMethod());
         log.info("请求类方法:" + joinPoint.getSignature());
-        log.info("请求类方法参数:" + Arrays.toString(joinPoint.getArgs()));
+        try {
+            log.info("请求类方法参数:" + JSONObject.toJSON(joinPoint.getArgs()));
+        } catch (Exception e) {
+            log.info("请求类方法参数:" + Arrays.toString(joinPoint.getArgs()));
+        }
         log.info("========================请求内容========================");
     }
 

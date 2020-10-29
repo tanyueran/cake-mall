@@ -1,12 +1,15 @@
 package com.github.tanyueran.service.imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.tanyueran.dto.RolePageQueryDto;
 import com.github.tanyueran.entity.CakeUserRole;
 import com.github.tanyueran.entity.PageQueryDto;
 import com.github.tanyueran.mapper.CakeUserRoleMapper;
 import com.github.tanyueran.service.CakeUserRoleService;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,8 +72,20 @@ public class CakeUserRoleServiceImpl extends ServiceImpl<CakeUserRoleMapper, Cak
     }
 
     @Override
-    public Page<CakeUserRole> getRoleByPage(PageQueryDto pageQueryDto) {
-        Page<CakeUserRole> page = new Page<>(pageQueryDto.getPage(), pageQueryDto.getSize());
-        return cakeUserRoleMapper.selectPage(page, null);
+    public IPage<CakeUserRole> getRoleByPage(RolePageQueryDto rolePageQueryDto) {
+//        Page<CakeUserRole> page = new Page<>(rolePageQueryDto.getPage(), rolePageQueryDto.getSize());
+        IPage<CakeUserRole> page = new Page<>(rolePageQueryDto.getPage(), rolePageQueryDto.getSize());
+        if (Strings.isEmpty(rolePageQueryDto.getKeyword())) {
+            rolePageQueryDto.setKeyword("");
+        }
+        QueryWrapper<CakeUserRole> wrapper = new QueryWrapper<>();
+        wrapper.like("role_name", rolePageQueryDto.getKeyword())
+                .or()
+                .like("role_code", rolePageQueryDto.getKeyword())
+                .or()
+                .like("remark", rolePageQueryDto.getKeyword())
+                .orderByAsc("create_time");
+        cakeUserRoleMapper.selectPage(page, wrapper);
+        return page;
     }
 }

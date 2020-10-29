@@ -1,9 +1,9 @@
 package com.github.tanyueran.controller;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.tanyueran.dto.RolePageQueryDto;
 import com.github.tanyueran.entity.CakeUserRole;
-import com.github.tanyueran.entity.PageQueryDto;
 import com.github.tanyueran.service.CakeUserRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,8 +50,8 @@ public class CakeUserRoleController {
     }
 
     @ApiOperation("查询分页查询角色")
-    @GetMapping("/getByPage")
-    public Page<CakeUserRole> getRoleListByPage(@RequestBody @Valid PageQueryDto pageQueryDto) {
-        return cakeUserRoleService.getRoleByPage(pageQueryDto);
+    @PostMapping("/getByPage")
+    public IPage<CakeUserRole> getRoleListByPage(@RequestBody @Valid RolePageQueryDto rolePageQueryDto) {
+        return cakeUserRoleService.getRoleByPage(rolePageQueryDto);
     }
 }

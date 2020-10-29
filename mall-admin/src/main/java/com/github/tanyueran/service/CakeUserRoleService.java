@@ -1,9 +1,9 @@
 package com.github.tanyueran.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.tanyueran.dto.RolePageQueryDto;
 import com.github.tanyueran.entity.CakeUserRole;
-import com.github.tanyueran.entity.PageQueryDto;
 
 /**
  * <p>
@@ -43,8 +43,8 @@ public interface CakeUserRoleService extends IService<CakeUserRole> {
     /**
      * 分页查询角色信息
      *
-     * @param pageQueryDto
+     * @param rolePageQueryDto
      * @return
      */
-    Page<CakeUserRole> getRoleByPage(PageQueryDto pageQueryDto);
+    IPage<CakeUserRole> getRoleByPage(RolePageQueryDto rolePageQueryDto);
 }

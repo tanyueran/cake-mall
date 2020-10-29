@@ -1,7 +1,11 @@
 package com.github.tanyueran.service.imp;
 
+import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.tanyueran.dto.CakeUserEditDto;
+import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
 import com.github.tanyueran.dto.LoginDto;
 import com.github.tanyueran.dto.RegisterDto;
 import com.github.tanyueran.entity.CakeUser;
@@ -11,6 +15,7 @@ import com.github.tanyueran.mapper.CakeUserRoleMapper;
 import com.github.tanyueran.service.CakeUserRoleService;
 import com.github.tanyueran.service.CakeUserService;
 import com.github.tanyueran.utils.JwtUtils;
+import com.github.tanyueran.utils.MD5Utils;
 import com.github.tanyueran.utils.RsaUtil;
 import com.github.tanyueran.vo.UserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,11 +132,14 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     }
 
     @Override
-    public Boolean editUser(CakeUser cakeUser) throws Exception {
-        cakeUser.setCreateTime(null);
-        cakeUser.setUpdateTime(null);
-        cakeUser.setUserPwd(null);
+    public Boolean editUser(CakeUserEditDto cakeUserEditDto) throws Exception {
+        CakeUser cakeUser = new CakeUser();
         cakeUser.setStatus(0);
+        cakeUser.setId(cakeUserEditDto.getId());
+        cakeUser.setNickname(cakeUserEditDto.getNickname());
+        cakeUser.setHeadImg(cakeUserEditDto.getHeadImg());
+        cakeUser.setUserCode(cakeUserEditDto.getUserCode());
+        cakeUser.setUserName(cakeUserEditDto.getUserName());
         CakeUser userInDB = cakeUserMapper.selectById(cakeUser.getId());
         if (!userInDB.getUserCode().equals(cakeUser.getUserCode())) {
             // 检测账号是否可以使用
@@ -143,6 +151,31 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
             }
         }
         int i = cakeUserMapper.updateById(cakeUser);
+        Boolean isOk = i == 1;
+        // 更新redis 的内容
+        UserInfoVo vo = (UserInfoVo) redisTemplate.opsForValue().get(redis_prefix + cakeUserEditDto.getUserCode());
+        redisTemplate.delete(redis_prefix + cakeUserEditDto.getUserCode());
+        CakeUser user = vo.getCakeUser();
+        user.setUserName(cakeUserEditDto.getUserName());
+        user.setUserCode(cakeUserEditDto.getUserCode());
+        user.setHeadImg(cakeUserEditDto.getHeadImg());
+        user.setNickname(cakeUserEditDto.getNickname());
+        redisTemplate.opsForValue().set(redis_prefix + cakeUserEditDto.getUserCode(), vo);
+        return isOk;
+    }
+
+    @Override
+    public Boolean updateUserPwd(CakeUserUpdatePwdDto cakeUserUpdatePwdDto) throws Exception {
+        if (!cakeUserUpdatePwdDto.getNewUserPwd().equals(cakeUserUpdatePwdDto.getNewUserPwd2())) {
+            throw new Exception("两次密码输入不一致");
+        }
+        UpdateWrapper<CakeUser> updateWrapper = new UpdateWrapper<>();
+        updateWrapper
+                .eq("id", cakeUserUpdatePwdDto.getId())
+                .eq("user_pwd", cakeUserUpdatePwdDto.getOldUserPwd());
+        CakeUser cakeUser = new CakeUser();
+        cakeUser.setUserPwd(cakeUserUpdatePwdDto.getNewUserPwd());
+        int i = cakeUserMapper.update(cakeUser, updateWrapper);
         return i == 1;
     }
 
@@ -150,7 +183,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     public Boolean initUserPwd(String userId) {
         CakeUser cakeUser = new CakeUser();
         cakeUser.setId(userId);
-        cakeUser.setUserPwd(initPasswordStr);
+        cakeUser.setUserPwd(MD5Utils.encodeMD5Hex(initPasswordStr));
         int i = cakeUserMapper.updateById(cakeUser);
         return i == 1;
     }

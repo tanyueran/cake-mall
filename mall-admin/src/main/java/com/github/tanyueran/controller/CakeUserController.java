@@ -1,6 +1,8 @@
 package com.github.tanyueran.controller;
 
 
+import com.github.tanyueran.dto.CakeUserEditDto;
+import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
 import com.github.tanyueran.dto.LoginDto;
 import com.github.tanyueran.dto.RegisterDto;
 import com.github.tanyueran.entity.CakeUser;
@@ -72,7 +74,7 @@ public class CakeUserController {
 
     @PutMapping("/edit")
     @ApiOperation("编辑用户")
-    public Boolean editUser(@RequestBody @Valid CakeUser cakeUser) throws Exception {
+    public Boolean editUser(@RequestBody @Valid CakeUserEditDto cakeUser) throws Exception {
         return cakeUserService.editUser(cakeUser);
     }
 
@@ -80,6 +82,12 @@ public class CakeUserController {
     @ApiOperation("初始化用户账号")
     public Boolean initUserPwd(@PathVariable("id") String id) {
         return cakeUserService.initUserPwd(id);
+    }
+
+    @PostMapping("/updatePwd")
+    @ApiOperation("更新密码")
+    public Boolean updatePwd(@RequestBody @Valid CakeUserUpdatePwdDto cakeUserUpdatePwdDto) throws Exception {
+        return cakeUserService.updateUserPwd(cakeUserUpdatePwdDto);
     }
 
     @PutMapping("/freeze/{id}")
