@@ -1,10 +1,8 @@
 package com.github.tanyueran.controller;
 
 
-import com.github.tanyueran.dto.CakeUserEditDto;
-import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
-import com.github.tanyueran.dto.LoginDto;
-import com.github.tanyueran.dto.RegisterDto;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.service.CakeUserService;
 import com.github.tanyueran.utils.JwtUtils;
@@ -46,6 +44,12 @@ public class CakeUserController {
     @ApiOperation("登录")
     public String login(@RequestBody @Valid LoginDto loginDto) throws Exception {
         return cakeUserService.login(loginDto);
+    }
+
+    @PostMapping("/aLogin")
+    @ApiOperation("管理平台登录")
+    public String aLogin(@RequestBody @Valid LoginDto loginDto) throws Exception {
+        return cakeUserService.loginForManager(loginDto);
     }
 
     @PostMapping("/register")
@@ -95,4 +99,16 @@ public class CakeUserController {
     public Boolean freezeUser(@PathVariable("id") String id) {
         return cakeUserService.freezeUser(id);
     }
+
+    @PutMapping("/unfreeze/{id}")
+    @ApiOperation("解冻账号")
+    public Boolean unfreezeUser(@PathVariable("id") String id) {
+        return cakeUserService.unfreezeUser(id);
+    }
+
+    @PostMapping("/getByPage")
+    public IPage<CakeUser> getUserListByPage(@RequestBody @Valid UserPageQueryDto userPageQueryDto) {
+        return cakeUserService.getUserByPage(userPageQueryDto);
+    }
+
 }

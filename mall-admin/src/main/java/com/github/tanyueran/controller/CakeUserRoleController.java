@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -53,5 +54,11 @@ public class CakeUserRoleController {
     @PostMapping("/getByPage")
     public IPage<CakeUserRole> getRoleListByPage(@RequestBody @Valid RolePageQueryDto rolePageQueryDto) {
         return cakeUserRoleService.getRoleByPage(rolePageQueryDto);
+    }
+
+    @ApiOperation("查询所有的角色")
+    @GetMapping("/all")
+    public List<CakeUserRole> getAllRoles() {
+        return cakeUserRoleService.getAllRoles();
     }
 }

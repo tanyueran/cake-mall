@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.tanyueran.dto.RolePageQueryDto;
 import com.github.tanyueran.entity.CakeUserRole;
 
+import java.util.List;
+
 /**
  * <p>
  * 服务类
@@ -47,4 +49,11 @@ public interface CakeUserRoleService extends IService<CakeUserRole> {
      * @return
      */
     IPage<CakeUserRole> getRoleByPage(RolePageQueryDto rolePageQueryDto);
+
+    /**
+     * 获取所有的角色
+     *
+     * @return
+     */
+    List<CakeUserRole> getAllRoles();
 }

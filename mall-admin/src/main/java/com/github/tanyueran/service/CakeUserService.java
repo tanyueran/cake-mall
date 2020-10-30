@@ -1,10 +1,8 @@
 package com.github.tanyueran.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.tanyueran.dto.CakeUserEditDto;
-import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
-import com.github.tanyueran.dto.LoginDto;
-import com.github.tanyueran.dto.RegisterDto;
+import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.vo.UserInfoVo;
 
@@ -28,6 +26,14 @@ public interface CakeUserService extends IService<CakeUser> {
      * @return token 返回jwt的token值
      */
     String login(LoginDto loginDto) throws Exception;
+
+    /**
+     * 管理员登录
+     *
+     * @param loginDto
+     * @return token 返回jwt的token值
+     */
+    String loginForManager(LoginDto loginDto) throws Exception;
 
     /**
      * 注册
@@ -87,4 +93,21 @@ public interface CakeUserService extends IService<CakeUser> {
      * @return
      */
     Boolean freezeUser(String userId);
+
+    /**
+     * 用户账号解冻
+     *
+     * @param userId
+     * @return
+     */
+    Boolean unfreezeUser(String userId);
+
+    /**
+     * 分页查询账户列表
+     *
+     * @param userPageQueryDto
+     * @return
+     */
+    IPage<CakeUser> getUserByPage(UserPageQueryDto userPageQueryDto);
+
 }

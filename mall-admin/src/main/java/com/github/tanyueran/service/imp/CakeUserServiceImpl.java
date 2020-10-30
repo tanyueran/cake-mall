@@ -1,13 +1,11 @@
 package com.github.tanyueran.service.imp;
 
-import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.tanyueran.dto.CakeUserEditDto;
-import com.github.tanyueran.dto.CakeUserUpdatePwdDto;
-import com.github.tanyueran.dto.LoginDto;
-import com.github.tanyueran.dto.RegisterDto;
+import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.entity.CakeUserRole;
 import com.github.tanyueran.mapper.CakeUserMapper;
@@ -18,17 +16,22 @@ import com.github.tanyueran.utils.JwtUtils;
 import com.github.tanyueran.utils.MD5Utils;
 import com.github.tanyueran.utils.RsaUtil;
 import com.github.tanyueran.vo.UserInfoVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -65,15 +68,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Override
-    public String login(LoginDto loginDto) throws Exception {
-        QueryWrapper<CakeUser> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_code", loginDto.getUsername());
-        wrapper.eq("user_pwd", loginDto.getPassword());
-        CakeUser user = cakeUserMapper.selectOne(wrapper);
-        if (user == null) {
-            throw new Exception("账号或密码错误");
-        }
+    public String loginUtil(CakeUser user) throws Exception {
         user.setUserPwd(null);
         CakeUserRole role = cakeUserRoleMapper.selectById(user.getCakeUserRoleId());
         UserInfoVo infoVo = new UserInfoVo();
@@ -91,6 +86,34 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         String token = JwtUtils.genToken(map, (RSAPrivateKey) key, future);
         return token;
     }
+
+    @Override
+    public String login(LoginDto loginDto) throws Exception {
+        QueryWrapper<CakeUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_code", loginDto.getUsername());
+        wrapper.eq("user_pwd", loginDto.getPassword());
+        CakeUser user = cakeUserMapper.selectOne(wrapper);
+        if (user == null) {
+            throw new Exception("账号或密码错误");
+        }
+        return loginUtil(user);
+    }
+
+    @Override
+    public String loginForManager(LoginDto loginDto) throws Exception {
+        QueryWrapper<CakeUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_pwd", loginDto.getPassword());
+        wrapper.eq("user_code", loginDto.getUsername());
+        CakeUser user = cakeUserMapper.selectOne(wrapper);
+        if (user == null) {
+            throw new Exception("账号或密码错误");
+        }
+        if (!user.getUserCode().equals("manager")) {
+            throw new Exception("您不是管理员无法登录管理系统");
+        }
+        return loginUtil(user);
+    }
+
 
     @Override
     public Boolean register(RegisterDto registerDto) throws Exception {
@@ -140,6 +163,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         cakeUser.setHeadImg(cakeUserEditDto.getHeadImg());
         cakeUser.setUserCode(cakeUserEditDto.getUserCode());
         cakeUser.setUserName(cakeUserEditDto.getUserName());
+        cakeUser.setRemark(cakeUserEditDto.getRemark());
         CakeUser userInDB = cakeUserMapper.selectById(cakeUser.getId());
         if (!userInDB.getUserCode().equals(cakeUser.getUserCode())) {
             // 检测账号是否可以使用
@@ -154,13 +178,15 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         Boolean isOk = i == 1;
         // 更新redis 的内容
         UserInfoVo vo = (UserInfoVo) redisTemplate.opsForValue().get(redis_prefix + cakeUserEditDto.getUserCode());
-        redisTemplate.delete(redis_prefix + cakeUserEditDto.getUserCode());
-        CakeUser user = vo.getCakeUser();
-        user.setUserName(cakeUserEditDto.getUserName());
-        user.setUserCode(cakeUserEditDto.getUserCode());
-        user.setHeadImg(cakeUserEditDto.getHeadImg());
-        user.setNickname(cakeUserEditDto.getNickname());
-        redisTemplate.opsForValue().set(redis_prefix + cakeUserEditDto.getUserCode(), vo);
+        if (vo != null) {
+            redisTemplate.delete(redis_prefix + cakeUserEditDto.getUserCode());
+            CakeUser user = vo.getCakeUser();
+            user.setUserName(cakeUserEditDto.getUserName());
+            user.setUserCode(cakeUserEditDto.getUserCode());
+            user.setHeadImg(cakeUserEditDto.getHeadImg());
+            user.setNickname(cakeUserEditDto.getNickname());
+            redisTemplate.opsForValue().set(redis_prefix + cakeUserEditDto.getUserCode(), vo);
+        }
         return isOk;
     }
 
@@ -195,5 +221,41 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         cakeUser.setStatus(1);
         int i = cakeUserMapper.updateById(cakeUser);
         return i == 1;
+    }
+
+    @Override
+    public Boolean unfreezeUser(String userId) {
+        CakeUser cakeUser = new CakeUser();
+        cakeUser.setId(userId);
+        cakeUser.setStatus(0);
+        int i = cakeUserMapper.updateById(cakeUser);
+        return i == 1;
+    }
+
+    @Override
+    public IPage<CakeUser> getUserByPage(UserPageQueryDto userPageQueryDto) {
+        IPage<CakeUser> page = new Page<>();
+        page.setCurrent(userPageQueryDto.getPage())
+                .setSize(userPageQueryDto.getSize());
+        QueryWrapper<CakeUser> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isEmpty(userPageQueryDto.getKeyword())) {
+            userPageQueryDto.setKeyword("");
+        }
+        if ((userPageQueryDto.getStatus() != null) &&
+                (userPageQueryDto.getStatus().size() > 0)) {
+            queryWrapper.in("status", userPageQueryDto.getStatus());
+        }
+        queryWrapper.and(e -> e.like("nickname", userPageQueryDto.getKeyword())
+                .or()
+                .like("user_name", userPageQueryDto.getKeyword())
+                .or()
+                .like("user_code", userPageQueryDto.getKeyword()));
+        cakeUserMapper.selectPage(page, queryWrapper);
+        List<CakeUser> collect = page.getRecords().stream().map(user -> {
+            user.setUserPwd(null);
+            return user;
+        }).collect(Collectors.toList());
+        page.setRecords(collect);
+        return page;
     }
 }

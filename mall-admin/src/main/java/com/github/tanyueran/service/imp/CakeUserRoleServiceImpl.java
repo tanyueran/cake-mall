@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -87,5 +88,10 @@ public class CakeUserRoleServiceImpl extends ServiceImpl<CakeUserRoleMapper, Cak
                 .orderByAsc("create_time");
         cakeUserRoleMapper.selectPage(page, wrapper);
         return page;
+    }
+
+    @Override
+    public List<CakeUserRole> getAllRoles() {
+        return cakeUserRoleMapper.selectList(null);
     }
 }
