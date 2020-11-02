@@ -57,7 +57,6 @@ public class CakeUser implements Serializable {
 
     @ApiModelProperty(value = "用户密码")
     @TableField("user_pwd")
-    @NotNull(message = "密码不可为空")
     private String userPwd;
 
     @ApiModelProperty(value = "账户金额")

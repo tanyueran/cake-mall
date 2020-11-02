@@ -30,7 +30,7 @@ public class CakeProductCategories implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.INPUT)
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "类型名称")
     @TableField("name")

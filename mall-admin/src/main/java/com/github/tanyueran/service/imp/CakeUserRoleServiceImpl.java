@@ -74,7 +74,6 @@ public class CakeUserRoleServiceImpl extends ServiceImpl<CakeUserRoleMapper, Cak
 
     @Override
     public IPage<CakeUserRole> getRoleByPage(RolePageQueryDto rolePageQueryDto) {
-//        Page<CakeUserRole> page = new Page<>(rolePageQueryDto.getPage(), rolePageQueryDto.getSize());
         IPage<CakeUserRole> page = new Page<>(rolePageQueryDto.getPage(), rolePageQueryDto.getSize());
         if (Strings.isEmpty(rolePageQueryDto.getKeyword())) {
             rolePageQueryDto.setKeyword("");

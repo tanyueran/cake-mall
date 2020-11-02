@@ -5,6 +5,7 @@ import com.github.tanyueran.entity.CakeOrder;
 import com.github.tanyueran.mapper.CakeOrderMapper;
 import com.github.tanyueran.service.CakeOrderService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @since 2020-10-23
  */
 @Service
+@Transactional
 public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder> implements CakeOrderService {
 
 }

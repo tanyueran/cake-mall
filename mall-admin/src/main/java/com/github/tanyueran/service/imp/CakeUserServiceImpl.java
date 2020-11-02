@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
  * @since 2020-10-23
  */
 @Service
+@Transactional
 public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> implements CakeUserService {
 
     @Resource
@@ -96,6 +98,14 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         if (user == null) {
             throw new Exception("账号或密码错误");
         }
+        // 判断账号是否被冻结
+        if (user.getStatus() != 0) {
+            throw new Exception("该账号已被冻结，请联系管理员！");
+        }
+        CakeUserRole role = cakeUserRoleService.getById(user.getCakeUserRoleId());
+        if (!role.getRoleCode().equals("user")) {
+            throw new Exception("您不是管理员无法登录管理系统");
+        }
         return loginUtil(user);
     }
 
@@ -108,7 +118,8 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         if (user == null) {
             throw new Exception("账号或密码错误");
         }
-        if (!user.getUserCode().equals("manager")) {
+        CakeUserRole role = cakeUserRoleService.getById(user.getCakeUserRoleId());
+        if (!role.getRoleCode().equals("manager")) {
             throw new Exception("您不是管理员无法登录管理系统");
         }
         return loginUtil(user);
@@ -150,6 +161,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         if (user != null) {
             throw new Exception("账号已被使用，请更换");
         }
+        cakeUser.setUserPwd(MD5Utils.encodeMD5Hex(initPasswordStr));
         int i = cakeUserMapper.insert(cakeUser);
         return i == 1;
     }

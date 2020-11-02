@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,22 +31,26 @@ public class CakeProduct implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.INPUT)
-    private Long id;
+    private String id;
 
     @ApiModelProperty(value = "分类id")
     @TableField("cake_product_categories_id")
-    private Long cakeProductCategoriesId;
+    @NotNull(message = "类型不可为空")
+    private String cakeProductCategoriesId;
 
     @ApiModelProperty(value = "蛋糕名称")
     @TableField("name")
+    @NotNull(message = "蛋糕名称不可为空")
     private String name;
 
     @ApiModelProperty(value = "蛋糕图片英文逗号分割，最多五个")
     @TableField("cake_imgs")
+    @NotNull(message = "蛋糕图片不可为空")
     private String cakeImgs;
 
     @ApiModelProperty(value = "蛋糕详情")
     @TableField("detail")
+    @NotNull(message = "蛋糕详情不可为空")
     private String detail;
 
     @ApiModelProperty(value = "删除状态(0未删除，1删除)")
@@ -58,6 +63,7 @@ public class CakeProduct implements Serializable {
 
     @ApiModelProperty(value = "蛋糕价格")
     @TableField("price")
+    @NotNull(message = "蛋糕价格不可为空")
     private Double price;
 
     @ApiModelProperty(value = "备注")

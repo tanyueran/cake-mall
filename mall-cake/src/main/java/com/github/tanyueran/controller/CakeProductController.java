@@ -1,8 +1,17 @@
 package com.github.tanyueran.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.tanyueran.dto.CategoryQueryDto;
+import com.github.tanyueran.entity.CakeProduct;
+import com.github.tanyueran.service.CakeProductService;
+import com.github.tanyueran.vo.CakeProductVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -13,7 +22,36 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2020-10-23
  */
 @RestController
-@RequestMapping("/cake-product")
+@RequestMapping("/product")
 public class CakeProductController {
+
+    @Resource
+    private CakeProductService cakeProductService;
+
+
+    @ApiOperation("蛋糕新增")
+    @PostMapping("/add")
+    public Boolean addCake(@RequestBody @Valid CakeProduct cakeProduct) {
+        return cakeProductService.addCake(cakeProduct);
+    }
+
+    @ApiOperation("蛋糕编辑")
+    @PutMapping("/update")
+    public Boolean editCake(@RequestBody @Valid CakeProduct cakeProduct) {
+        return cakeProductService.updateCake(cakeProduct);
+    }
+
+    @ApiOperation("删除蛋糕")
+    @DeleteMapping("/delete/{id}")
+    public Boolean removeCakeById(@PathVariable("id") String cakeId) {
+        return cakeProductService.removeCakeById(cakeId);
+    }
+
+    @ApiOperation("分页查询蛋糕列表")
+    @PostMapping("/getPage")
+    public IPage<CakeProductVo> getQueryPage(@RequestBody @Valid CategoryQueryDto categoryQueryDto) {
+        return cakeProductService.getCakeByPage(categoryQueryDto);
+    }
+
 
 }

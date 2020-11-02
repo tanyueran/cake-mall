@@ -20,7 +20,7 @@ import java.security.spec.InvalidKeySpecException;
 public interface CakeUserService extends IService<CakeUser> {
 
     /**
-     * 登录
+     * 普通用户登录
      *
      * @param loginDto
      * @return token 返回jwt的token值
