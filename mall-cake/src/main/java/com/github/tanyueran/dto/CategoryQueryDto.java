@@ -14,6 +14,6 @@ public class CategoryQueryDto extends PageQueryDto {
     @ApiModelProperty("关键字")
     private String keywords;
 
-    @ApiModelProperty("分页主键")
+    @ApiModelProperty("分类主键")
     private List<String> categoriesId;
 }

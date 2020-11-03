@@ -1,5 +1,6 @@
 package com.github.tanyueran.service.imp;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +16,7 @@ import com.github.tanyueran.service.CakeUserService;
 import com.github.tanyueran.utils.JwtUtils;
 import com.github.tanyueran.utils.MD5Utils;
 import com.github.tanyueran.utils.RsaUtil;
+import com.github.tanyueran.vo.CakeUserVo;
 import com.github.tanyueran.vo.UserInfoVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +103,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         }
         CakeUserRole role = cakeUserRoleService.getById(user.getCakeUserRoleId());
         if (!role.getRoleCode().equals("user")) {
-            throw new Exception("您不是管理员无法登录管理系统");
+            throw new Exception("管理员不可登录此系统");
         }
         return loginUtil(user);
     }
@@ -245,7 +244,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     }
 
     @Override
-    public IPage<CakeUser> getUserByPage(UserPageQueryDto userPageQueryDto) {
+    public IPage<CakeUserVo> getUserByPage(UserPageQueryDto userPageQueryDto) {
         IPage<CakeUser> page = new Page<>();
         page.setCurrent(userPageQueryDto.getPage())
                 .setSize(userPageQueryDto.getSize());
@@ -253,9 +252,13 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         if (StringUtils.isEmpty(userPageQueryDto.getKeyword())) {
             userPageQueryDto.setKeyword("");
         }
-        if ((userPageQueryDto.getStatus() != null) &&
-                (userPageQueryDto.getStatus().size() > 0)) {
+        if (((userPageQueryDto.getStatus() != null) && (userPageQueryDto.getStatus().size() > 0))
+                && (userPageQueryDto.getCakeUserRoleId() != null && userPageQueryDto.getCakeUserRoleId().size() > 0)) {
+            queryWrapper.in("status", userPageQueryDto.getStatus()).and(e -> e.in("cake_user_role_id", userPageQueryDto.getCakeUserRoleId()));
+        } else if (((userPageQueryDto.getStatus() != null) && (userPageQueryDto.getStatus().size() > 0)) && !(userPageQueryDto.getCakeUserRoleId() != null && userPageQueryDto.getCakeUserRoleId().size() > 0)) {
             queryWrapper.in("status", userPageQueryDto.getStatus());
+        } else if (!((userPageQueryDto.getStatus() != null) && (userPageQueryDto.getStatus().size() > 0)) && (userPageQueryDto.getCakeUserRoleId() != null && userPageQueryDto.getCakeUserRoleId().size() > 0)) {
+            queryWrapper.in("cake_user_role_id", userPageQueryDto.getCakeUserRoleId());
         }
         queryWrapper.and(e -> e.like("nickname", userPageQueryDto.getKeyword())
                 .or()
@@ -263,11 +266,32 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
                 .or()
                 .like("user_code", userPageQueryDto.getKeyword()));
         cakeUserMapper.selectPage(page, queryWrapper);
+        // 去掉密码
         List<CakeUser> collect = page.getRecords().stream().map(user -> {
             user.setUserPwd(null);
             return user;
         }).collect(Collectors.toList());
         page.setRecords(collect);
-        return page;
+        // 所有的角色
+        List<CakeUserRole> allRoles = cakeUserRoleService.getAllRoles();
+        Map<String, CakeUserRole> map = new HashMap<>();
+        allRoles.forEach(item -> {
+            map.put(item.getId(), item);
+        });
+        IPage<CakeUserVo> iPage = new Page<>();
+        iPage.setPages(page.getPages());
+        iPage.setTotal(page.getTotal());
+        iPage.setCurrent(page.getCurrent());
+        iPage.setSize(page.getSize());
+        List<CakeUserVo> list = new ArrayList<>(page.getRecords().size());
+        page.getRecords().forEach(item -> {
+            String str = JSONObject.toJSONString(item);
+            CakeUserVo cakeUserVo = JSONObject.parseObject(str, CakeUserVo.class);
+            CakeUserRole role = JSONObject.parseObject(JSONObject.toJSONString(map.get(item.getCakeUserRoleId())), CakeUserRole.class);
+            cakeUserVo.setCakeUserRole(role);
+            list.add(cakeUserVo);
+        });
+        iPage.setRecords(list);
+        return iPage;
     }
 }

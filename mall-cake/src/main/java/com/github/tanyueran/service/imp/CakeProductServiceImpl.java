@@ -79,6 +79,7 @@ public class CakeProductServiceImpl extends ServiceImpl<CakeProductMapper, CakeP
         if (categoryQueryDto.getCategoriesId() != null && categoryQueryDto.getCategoriesId().size() > 0) {
             wrapper.in("cake_product_categories_id", categoryQueryDto.getCategoriesId());
         }
+        wrapper.and(e -> e.eq("delete_status", 0));
         wrapper.and(e -> e.like("name", categoryQueryDto.getKeywords())
                 .or()
                 .like("detail", categoryQueryDto.getKeywords())

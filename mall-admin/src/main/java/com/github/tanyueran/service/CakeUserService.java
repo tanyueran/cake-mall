@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeUser;
+import com.github.tanyueran.vo.CakeUserVo;
 import com.github.tanyueran.vo.UserInfoVo;
 
 import java.security.NoSuchAlgorithmException;
@@ -108,6 +109,6 @@ public interface CakeUserService extends IService<CakeUser> {
      * @param userPageQueryDto
      * @return
      */
-    IPage<CakeUser> getUserByPage(UserPageQueryDto userPageQueryDto);
+    IPage<CakeUserVo> getUserByPage(UserPageQueryDto userPageQueryDto);
 
 }

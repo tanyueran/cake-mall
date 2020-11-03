@@ -7,6 +7,7 @@ import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.service.CakeUserService;
 import com.github.tanyueran.utils.JwtUtils;
 import com.github.tanyueran.utils.RsaUtil;
+import com.github.tanyueran.vo.CakeUserVo;
 import com.github.tanyueran.vo.UserInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -107,7 +108,7 @@ public class CakeUserController {
     }
 
     @PostMapping("/getByPage")
-    public IPage<CakeUser> getUserListByPage(@RequestBody @Valid UserPageQueryDto userPageQueryDto) {
+    public IPage<CakeUserVo> getUserListByPage(@RequestBody @Valid UserPageQueryDto userPageQueryDto) {
         return cakeUserService.getUserByPage(userPageQueryDto);
     }
 

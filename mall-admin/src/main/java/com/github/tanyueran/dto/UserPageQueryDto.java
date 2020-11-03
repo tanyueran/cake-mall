@@ -17,4 +17,7 @@ public class UserPageQueryDto extends PageQueryDto {
     @ApiModelProperty("激活状态（0激活，1冻结）")
     private List<Integer> status;
 
+    @ApiModelProperty("角色id集合")
+    private List<String> cakeUserRoleId;
+
 }
