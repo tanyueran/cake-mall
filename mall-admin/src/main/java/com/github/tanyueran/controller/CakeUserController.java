@@ -47,6 +47,13 @@ public class CakeUserController {
         return cakeUserService.login(loginDto);
     }
 
+    @GetMapping("/refreshToken")
+    @ApiOperation("刷新token")
+    public String refreshToken(HttpServletRequest request) throws Exception {
+        String token = request.getHeader("token");
+        return cakeUserService.refreshToken(token);
+    }
+
     @PostMapping("/aLogin")
     @ApiOperation("管理平台登录")
     public String aLogin(@RequestBody @Valid LoginDto loginDto) throws Exception {
@@ -63,7 +70,6 @@ public class CakeUserController {
     @GetMapping("/getInfo")
     @ApiOperation("获取用户信息")
     public UserInfoVo getUserInfo(HttpServletRequest request) throws Exception {
-        log.info(publicKey);
         String token = request.getHeader("token");
         Map<String, String> map = JwtUtils.verifyToken(token, (RSAPublicKey) RsaUtil.getPublicKey(publicKey));
         String userCode = map.get("userCode");

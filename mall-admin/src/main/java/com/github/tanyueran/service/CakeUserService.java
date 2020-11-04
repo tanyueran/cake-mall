@@ -28,6 +28,16 @@ public interface CakeUserService extends IService<CakeUser> {
      */
     String login(LoginDto loginDto) throws Exception;
 
+
+    /**
+     * 刷新token
+     *
+     * @param token
+     * @return
+     * @throws Exception
+     */
+    String refreshToken(String token) throws Exception;
+
     /**
      * 管理员登录
      *

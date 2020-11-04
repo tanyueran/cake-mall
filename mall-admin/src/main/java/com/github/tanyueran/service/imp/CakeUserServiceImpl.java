@@ -29,6 +29,7 @@ import javax.annotation.Resource;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,6 +66,8 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     // 私钥
     @Value("${self.key.private}")
     private String privateKey;
+    @Value("${self.key.public}")
+    private String publicKey;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -83,7 +86,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         map.put("userCode", user.getUserCode());
         // 过期时间
         Date future = new Date();
-        future.setTime(new Date().getTime() + 24 * 60 * 60 * 1000);
+        future.setTime(new Date().getTime() + 48 * 60 * 60 * 1000);
         String token = JwtUtils.genToken(map, (RSAPrivateKey) key, future);
         return token;
     }
@@ -106,6 +109,27 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
             throw new Exception("管理员不可登录此系统");
         }
         return loginUtil(user);
+    }
+
+    @Override
+    public String refreshToken(String token) throws Exception {
+        Map<String, String> map = null;
+        try {
+            map = JwtUtils.verifyToken(token, (RSAPublicKey) RsaUtil.getPublicKey(publicKey));
+        } catch (Exception e) {
+            log.error("刷新token时，解析token出错：", e);
+            throw new Exception("token 无效");
+        }
+        String userCode = map.get("userCode");
+        // 返回token
+        PrivateKey key = RsaUtil.getPrivateKey(this.privateKey);
+        Map<String, String> m = new HashMap<>();
+        m.put("userCode", userCode);
+        // 过期时间
+        Date future = new Date();
+        future.setTime(new Date().getTime() + 48 * 60 * 60 * 1000);
+        String newToken = JwtUtils.genToken(m, (RSAPrivateKey) key, future);
+        return newToken;
     }
 
     @Override
