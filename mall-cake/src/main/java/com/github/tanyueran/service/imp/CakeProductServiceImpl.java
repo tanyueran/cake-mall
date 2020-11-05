@@ -113,4 +113,14 @@ public class CakeProductServiceImpl extends ServiceImpl<CakeProductMapper, CakeP
         ipage.setRecords(list);
         return ipage;
     }
+
+    @Override
+    public CakeProductVo getCakeDetailInfoById(String cakeId) {
+        CakeProduct cakeProduct = cakeProductMapper.selectById(cakeId);
+        String s = JSONObject.toJSONString(cakeProduct);
+        CakeProductVo cakeProductVo = JSONObject.parseObject(s, CakeProductVo.class);
+        CakeProductCategories categories = cakeProductCategoriesMapper.selectById(cakeProductVo.getCakeProductCategoriesId());
+        cakeProductVo.setCakeProductCategories(categories);
+        return cakeProductVo;
+    }
 }

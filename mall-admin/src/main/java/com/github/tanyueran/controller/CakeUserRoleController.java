@@ -8,6 +8,7 @@ import com.github.tanyueran.service.CakeUserRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/role")
 @Api(tags = "CakeUserRoleController", description = "蛋糕角色操作")
+@PreAuthorize("hasRole('manager')")
 public class CakeUserRoleController {
 
     @Autowired

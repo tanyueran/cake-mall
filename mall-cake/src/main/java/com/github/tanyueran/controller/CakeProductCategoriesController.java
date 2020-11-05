@@ -8,6 +8,7 @@ import com.github.tanyueran.service.CakeProductCategoriesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,18 +38,21 @@ public class CakeProductCategoriesController {
 
     @PostMapping("/add")
     @ApiOperation("添加蛋糕类型")
+    @PreAuthorize("hasRole('manager')")
     public Boolean addCategory(@RequestBody @Valid CakeProductCategories cakeProductCategories) throws Exception {
         return cakeProductCategoriesService.addCategories(cakeProductCategories);
     }
 
     @PutMapping("/update")
     @ApiOperation("更新蛋糕类型")
+    @PreAuthorize("hasRole('manager')")
     public Boolean updateCategory(@RequestBody @Valid CakeProductCategories cakeProductCategories) throws Exception {
         return cakeProductCategoriesService.editCategory(cakeProductCategories);
     }
 
     @DeleteMapping("/delete/{id}")
     @ApiOperation("删除类型")
+    @PreAuthorize("hasRole('manager')")
     public Boolean deleteCategory(@PathVariable String id) {
         return cakeProductCategoriesService.removeCategoryById(id);
     }

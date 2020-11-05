@@ -49,5 +49,13 @@ public interface CakeProductService extends IService<CakeProduct> {
      */
     IPage<CakeProductVo> getCakeByPage(CategoryQueryDto categoryQueryDto);
 
+    /**
+     * 根据蛋糕id查询蛋糕详情
+     *
+     * @param cakeId
+     * @return
+     */
+    CakeProductVo getCakeDetailInfoById(String cakeId);
+
 
 }

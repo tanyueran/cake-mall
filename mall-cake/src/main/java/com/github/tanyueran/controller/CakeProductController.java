@@ -8,6 +8,7 @@ import com.github.tanyueran.service.CakeProductService;
 import com.github.tanyueran.vo.CakeProductVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,18 +32,21 @@ public class CakeProductController {
 
     @ApiOperation("蛋糕新增")
     @PostMapping("/add")
+    @PreAuthorize("hasRole('manager')")
     public Boolean addCake(@RequestBody @Valid CakeProduct cakeProduct) {
         return cakeProductService.addCake(cakeProduct);
     }
 
     @ApiOperation("蛋糕编辑")
     @PutMapping("/update")
+    @PreAuthorize("hasRole('manager')")
     public Boolean editCake(@RequestBody @Valid CakeProduct cakeProduct) {
         return cakeProductService.updateCake(cakeProduct);
     }
 
     @ApiOperation("删除蛋糕")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('manager')")
     public Boolean removeCakeById(@PathVariable("id") String cakeId) {
         return cakeProductService.removeCakeById(cakeId);
     }
@@ -51,6 +55,12 @@ public class CakeProductController {
     @PostMapping("/getPage")
     public IPage<CakeProductVo> getQueryPage(@RequestBody @Valid CategoryQueryDto categoryQueryDto) {
         return cakeProductService.getCakeByPage(categoryQueryDto);
+    }
+
+    @ApiOperation("根据蛋糕id查询详情")
+    @GetMapping("/detail/{id}")
+    public CakeProductVo getDetailById(@PathVariable("id") String cakeId) {
+        return cakeProductService.getCakeDetailInfoById(cakeId);
     }
 
 

@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -49,6 +50,7 @@ public class CakeUserController {
 
     @GetMapping("/refreshToken")
     @ApiOperation("刷新token")
+    @PreAuthorize("hasRole('user')")
     public String refreshToken(HttpServletRequest request) throws Exception {
         String token = request.getHeader("token");
         return cakeUserService.refreshToken(token);
@@ -79,18 +81,21 @@ public class CakeUserController {
 
     @PostMapping("/add")
     @ApiOperation("添加用户")
+    @PreAuthorize("hasRole('manager')")
     public Boolean addUser(@RequestBody @Valid CakeUser cakeUser) throws Exception {
         return cakeUserService.addUser(cakeUser);
     }
 
     @PutMapping("/edit")
     @ApiOperation("编辑用户")
+    @PreAuthorize("hasRole('manager')")
     public Boolean editUser(@RequestBody @Valid CakeUserEditDto cakeUser) throws Exception {
         return cakeUserService.editUser(cakeUser);
     }
 
     @PutMapping("/initPwd/{id}")
     @ApiOperation("初始化用户账号")
+    @PreAuthorize("hasRole('manager')")
     public Boolean initUserPwd(@PathVariable("id") String id) {
         return cakeUserService.initUserPwd(id);
     }
@@ -103,17 +108,21 @@ public class CakeUserController {
 
     @PutMapping("/freeze/{id}")
     @ApiOperation("冻结账号")
+    @PreAuthorize("hasRole('manager')")
     public Boolean freezeUser(@PathVariable("id") String id) {
         return cakeUserService.freezeUser(id);
     }
 
     @PutMapping("/unfreeze/{id}")
     @ApiOperation("解冻账号")
+    @PreAuthorize("hasRole('manager')")
     public Boolean unfreezeUser(@PathVariable("id") String id) {
         return cakeUserService.unfreezeUser(id);
     }
 
+    @ApiOperation("分页查询用户数据")
     @PostMapping("/getByPage")
+    @PreAuthorize("hasRole('manager')")
     public IPage<CakeUserVo> getUserListByPage(@RequestBody @Valid UserPageQueryDto userPageQueryDto) {
         return cakeUserService.getUserByPage(userPageQueryDto);
     }

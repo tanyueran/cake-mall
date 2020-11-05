@@ -1,5 +1,6 @@
 package com.github.tanyueran.service.imp;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -9,6 +10,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.entity.CakeUserRole;
+import com.github.tanyueran.entity.User;
+import com.github.tanyueran.entity.UserRole;
 import com.github.tanyueran.mapper.CakeUserMapper;
 import com.github.tanyueran.mapper.CakeUserRoleMapper;
 import com.github.tanyueran.service.CakeUserRoleService;
@@ -18,6 +21,7 @@ import com.github.tanyueran.utils.MD5Utils;
 import com.github.tanyueran.utils.RsaUtil;
 import com.github.tanyueran.vo.CakeUserVo;
 import com.github.tanyueran.vo.UserInfoVo;
+import com.github.tanyueran.vo.UserVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,11 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,11 +77,13 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     public String loginUtil(CakeUser user) throws Exception {
         user.setUserPwd(null);
         CakeUserRole role = cakeUserRoleMapper.selectById(user.getCakeUserRoleId());
-        UserInfoVo infoVo = new UserInfoVo();
-        infoVo.setCakeUser(user);
-        infoVo.setCakeUserRole(role);
+        UserVo userVo = new UserVo();
+        User u = JSONObject.parseObject(JSONObject.toJSONString(user), User.class);
+        UserRole r = JSONObject.parseObject(JSONObject.toJSONString(role), UserRole.class);
+        userVo.setUser(u);
+        userVo.setUserRole(r);
         // 保存到redis中
-        redisTemplate.opsForValue().set(redis_prefix + user.getUserCode(), infoVo);
+        redisTemplate.opsForValue().set(redis_prefix + user.getUserCode(), userVo);
         // 返回token
         PrivateKey key = RsaUtil.getPrivateKey(this.privateKey);
         Map<String, String> map = new HashMap<>();
@@ -170,7 +174,10 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
 
     @Override
     public UserInfoVo getUserInfoByUserCode(String userCode) throws Exception {
-        UserInfoVo userInfoVo = (UserInfoVo) redisTemplate.opsForValue().get(redis_prefix + userCode);
+        UserVo userVo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + userCode);
+        UserInfoVo userInfoVo = new UserInfoVo();
+        userInfoVo.setCakeUser(JSONObject.parseObject(JSONObject.toJSONString(userVo.getUser()), CakeUser.class));
+        userInfoVo.setCakeUserRole(JSONObject.parseObject(JSONObject.toJSONString(userVo.getUserRole()), CakeUserRole.class));
         return userInfoVo;
     }
 
@@ -212,10 +219,11 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         int i = cakeUserMapper.updateById(cakeUser);
         Boolean isOk = i == 1;
         // 更新redis 的内容
-        UserInfoVo vo = (UserInfoVo) redisTemplate.opsForValue().get(redis_prefix + cakeUserEditDto.getUserCode());
+        UserVo vo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + cakeUserEditDto.getUserCode());
+
         if (vo != null) {
             redisTemplate.delete(redis_prefix + cakeUserEditDto.getUserCode());
-            CakeUser user = vo.getCakeUser();
+            User user = vo.getUser();
             user.setUserName(cakeUserEditDto.getUserName());
             user.setUserCode(cakeUserEditDto.getUserCode());
             user.setHeadImg(cakeUserEditDto.getHeadImg());

@@ -7,8 +7,6 @@ import com.github.tanyueran.entity.CakeUser;
 import com.github.tanyueran.vo.CakeUserVo;
 import com.github.tanyueran.vo.UserInfoVo;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * <p>
