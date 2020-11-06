@@ -1,6 +1,5 @@
 package com.github.tanyueran.service.imp;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -325,5 +325,36 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         });
         iPage.setRecords(list);
         return iPage;
+    }
+
+    @Override
+    public Boolean addMoney(AddMoneyDto addMoneyDto) throws Exception {
+        String userId = addMoneyDto.getCakeUserId();
+        if (userId == null) {
+            throw new Exception("充值的账号不可为空");
+        }
+        CakeUser cakeUser = cakeUserMapper.selectById(userId);
+        // 原金额 + 充值金额
+        Double money = cakeUser.getMoney();
+        BigDecimal bigDecimal = BigDecimal.valueOf(money);
+        Double plusMoney = addMoneyDto.getMoney();
+        BigDecimal bigDecimal1 = BigDecimal.valueOf(plusMoney);
+        BigDecimal add = bigDecimal.add(bigDecimal1).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        CakeUser cakeUser1 = new CakeUser();
+        cakeUser1.setId(userId);
+        cakeUser1.setMoney(add.doubleValue());
+        int i = cakeUserMapper.updateById(cakeUser1);
+        Boolean b = i == 1;
+        if (b) {
+            // 更新redis 的内容
+            UserVo vo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + cakeUser.getUserCode());
+            if (vo != null) {
+                redisTemplate.delete(redis_prefix + cakeUser.getUserCode());
+                User user = vo.getUser();
+                user.setMoney(cakeUser1.getMoney());
+                redisTemplate.opsForValue().set(redis_prefix + cakeUser.getUserCode(), vo);
+            }
+        }
+        return b;
     }
 }

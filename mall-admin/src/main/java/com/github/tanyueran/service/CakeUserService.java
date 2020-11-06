@@ -119,4 +119,12 @@ public interface CakeUserService extends IService<CakeUser> {
      */
     IPage<CakeUserVo> getUserByPage(UserPageQueryDto userPageQueryDto);
 
+    /**
+     * 添加金额
+     *
+     * @param addMoneyDto
+     * @return
+     */
+    Boolean addMoney(AddMoneyDto addMoneyDto) throws Exception;
+
 }

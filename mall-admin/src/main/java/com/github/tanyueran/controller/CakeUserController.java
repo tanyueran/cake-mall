@@ -88,7 +88,6 @@ public class CakeUserController {
 
     @PutMapping("/edit")
     @ApiOperation("编辑用户")
-    @PreAuthorize("hasRole('manager')")
     public Boolean editUser(@RequestBody @Valid CakeUserEditDto cakeUser) throws Exception {
         return cakeUserService.editUser(cakeUser);
     }
@@ -125,6 +124,13 @@ public class CakeUserController {
     @PreAuthorize("hasRole('manager')")
     public IPage<CakeUserVo> getUserListByPage(@RequestBody @Valid UserPageQueryDto userPageQueryDto) {
         return cakeUserService.getUserByPage(userPageQueryDto);
+    }
+
+    @ApiOperation("充值金额")
+    @PostMapping("/addMoney")
+    @PreAuthorize("hasRole('user')")
+    public Boolean addMoney(@RequestBody @Valid AddMoneyDto addMoneyDto) throws Exception {
+        return cakeUserService.addMoney(addMoneyDto);
     }
 
 }
