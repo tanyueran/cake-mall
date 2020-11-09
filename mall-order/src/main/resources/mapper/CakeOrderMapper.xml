@@ -1,5 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.tanyueran.mapper.CakeOrderMapper">
+    <!--查询账户详情-->
+    <select id="queryDetail" parameterType="String" resultType="com.github.tanyueran.entity.User">
+    SELECT
+        id,
+        nickname,
+        user_name,
+        head_img,
+        user_code
+    FROM
+        `cake_user`
+    WHERE
+        id =  #{id}
+    </select>
 
+    <!--查询蛋糕详情-->
+    <select id="queryCakeDetail" parameterType="String" resultType="com.github.tanyueran.entity.CakeProduct">
+      SELECT
+        id,
+        `name`,
+        cake_imgs,
+        detail,
+        price
+    FROM
+        `cake_product`
+    WHERE
+        id = #{id}
+    </select>
+
+    <resultMap id="orderPageQueryMap" type="com.github.tanyueran.vo.CakeOrderVo">
+        <id column="id" property="id"/>
+        <result column="cake_product_id" property="cakeProductId"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="action_user_id" property="actionUserId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="number" property="number"/>
+        <result column="price" property="price"/>
+        <result column="total_price" property="totalPrice"/>
+        <result column="status5_time" property="status5Time"/>
+        <result column="status10_time" property="status10Time"/>
+        <result column="status15_time" property="status15Time"/>
+        <result column="status20_time" property="status20Time"/>
+        <result column="status30_time" property="status30Time"/>
+        <result column="status40_time" property="status40Time"/>
+        <result column="remark" property="remark"/>
+        <association column="cake_product_id" property="cakeProduct" select="queryCakeDetail"/>
+        <association column="action_user_id" property="buyUser" select="queryDetail"/>
+    </resultMap>
+
+    <!--查询订单-->
+    <select id="orderPageQuery"
+            resultMap="orderPageQueryMap"
+            parameterType="com.github.tanyueran.dto.QueryOrderListDto"
+            resultType="com.github.tanyueran.vo.CakeOrderVo">
+       SELECT
+            id,
+            cake_product_id,
+            create_user_id,
+            action_user_id,
+            STATUS,
+            create_time,
+            `number`,
+            price,
+            total_price,
+            status5_time,
+            status10_time,
+            status15_time,
+            status20_time,
+            status30_time,
+            status40_time,
+            remark
+        FROM
+            `cake_order`
+        WHERE
+            status = #{dto.status}
+    </select>
 </mapper>

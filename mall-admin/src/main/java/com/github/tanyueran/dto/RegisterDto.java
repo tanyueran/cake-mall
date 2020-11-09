@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
 public class RegisterDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @NotBlank(message = "主键不可为空")
     private String id;
 
     @ApiModelProperty(value = "昵称")
@@ -24,10 +26,10 @@ public class RegisterDto implements Serializable {
     private String headImg;
 
     @ApiModelProperty(value = "用户账号")
-    @NotNull(message = "账号不可为空")
+    @NotBlank(message = "账号不可为空")
     private String userCode;
 
     @ApiModelProperty(value = "用户密码")
-    @NotNull(message = "密码不可为空")
+    @NotBlank(message = "密码不可为空")
     private String userPwd;
 }

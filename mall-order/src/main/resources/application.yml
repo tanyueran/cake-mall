@@ -29,8 +29,17 @@ spring:
       useGlobalDataSourceStat: true
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
+feign:
+  hystrix:
+    enabled: false
+
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   configuration:
     # 开启下划线转驼峰
     map-underscore-to-camel-case: true
+
+# 自定义的参数
+self:
+  # 账号保存的redis的前缀
+  user_prefix: MALL-SYS_

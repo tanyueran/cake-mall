@@ -357,4 +357,23 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         }
         return b;
     }
+
+    @Override
+    public Boolean pay(PayDto payDto) throws Exception {
+        CakeUser cakeUser = cakeUserMapper.selectById(payDto.getCakeUserId());
+        if (cakeUser == null) {
+            throw new Exception("该用户不存在");
+        }
+        if (cakeUser.getMoney() < payDto.getPayPrice()) {
+            throw new Exception("余额不足");
+        }
+        BigDecimal payPrice = BigDecimal.valueOf(payDto.getPayPrice());
+        BigDecimal price = BigDecimal.valueOf(cakeUser.getMoney());
+        BigDecimal subtract = price.subtract(payPrice);
+        CakeUser newUser = new CakeUser();
+        newUser.setId(cakeUser.getId());
+        newUser.setMoney(subtract.doubleValue());
+        int i = cakeUserMapper.updateById(newUser);
+        return i == 1;
+    }
 }

@@ -127,4 +127,12 @@ public interface CakeUserService extends IService<CakeUser> {
      */
     Boolean addMoney(AddMoneyDto addMoneyDto) throws Exception;
 
+
+    /**
+     * 付款
+     *
+     * @return
+     */
+    Boolean pay(PayDto payDto) throws Exception;
+
 }

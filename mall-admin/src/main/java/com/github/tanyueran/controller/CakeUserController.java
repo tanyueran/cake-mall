@@ -128,9 +128,16 @@ public class CakeUserController {
 
     @ApiOperation("充值金额")
     @PostMapping("/addMoney")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('manager')")
     public Boolean addMoney(@RequestBody @Valid AddMoneyDto addMoneyDto) throws Exception {
         return cakeUserService.addMoney(addMoneyDto);
+    }
+
+    @ApiOperation("付钱")
+    @PostMapping("/pay")
+    @PreAuthorize("hasRole('user')")
+    public Boolean pay(@RequestBody @Valid PayDto payDto) throws Exception {
+        return cakeUserService.pay(payDto);
     }
 
 }
