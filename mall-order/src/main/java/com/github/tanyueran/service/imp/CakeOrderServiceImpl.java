@@ -1,6 +1,7 @@
 package com.github.tanyueran.service.imp;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,6 +15,7 @@ import com.github.tanyueran.service.CakeOrderService;
 import com.github.tanyueran.service.CakeService;
 import com.github.tanyueran.vo.CakeOrderVo;
 import com.github.tanyueran.vo.CakeProductVo;
+import com.github.tanyueran.vo.OrderCollcetionInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,5 +77,19 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
     public Page<CakeOrderVo> queryOrderByPage(QueryOrderListDto queryOrderListDto) {
         Page<CakeOrderVo> page = new Page<>(queryOrderListDto.getPage(), queryOrderListDto.getSize());
         return cakeOrderMapper.orderPageQuery(page, queryOrderListDto);
+    }
+
+    @Override
+    public OrderCollcetionInfoVo getOrderCollectionInfo(String userId) {
+        // 查询所有的订单数
+        QueryWrapper<CakeOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("create_user_id", userId);
+        Integer count = cakeOrderMapper.selectCount(wrapper);
+        Double totalMoney = cakeOrderMapper.totalMoneyByUserId(userId);
+        // 查询所有的金额数
+        OrderCollcetionInfoVo vo = new OrderCollcetionInfoVo();
+        vo.setTotalOrderNumber(count);
+        vo.setTotalMoney(totalMoney);
+        return vo;
     }
 }

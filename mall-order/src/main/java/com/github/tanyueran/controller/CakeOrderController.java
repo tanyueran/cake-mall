@@ -6,7 +6,9 @@ import com.github.tanyueran.dto.CreateOrderDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.service.CakeOrderService;
 import com.github.tanyueran.vo.CakeOrderVo;
+import com.github.tanyueran.vo.OrderCollcetionInfoVo;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/action")
+@Slf4j
 public class CakeOrderController {
 
     @Autowired
@@ -37,8 +40,13 @@ public class CakeOrderController {
     @PostMapping("/pageQuery")
     @ApiOperation("分页查询订单")
     public Page<CakeOrderVo> pageQueryOrders(@RequestBody @Valid QueryOrderListDto queryOrderListDto) {
-        return cakeOrderService.queryOrderByPage(queryOrderListDto);
+        Page<CakeOrderVo> cakeOrderVoPage = cakeOrderService.queryOrderByPage(queryOrderListDto);
+        return cakeOrderVoPage;
     }
 
-
+    @ApiOperation("查询个人用户一些基本信息")
+    @GetMapping("/orderCollectionInfo/{userId}")
+    public OrderCollcetionInfoVo getOrderCollectionInfo(@PathVariable("userId") String userId) {
+        return cakeOrderService.getOrderCollectionInfo(userId);
+    }
 }

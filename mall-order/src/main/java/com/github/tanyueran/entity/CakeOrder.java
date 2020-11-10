@@ -110,6 +110,4 @@ public class CakeOrder implements Serializable {
     @ApiModelProperty(value = "备注")
     @TableField("remark")
     private String remark;
-
-
 }

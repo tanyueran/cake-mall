@@ -19,8 +19,11 @@ public class WebMvcConverterConfig implements WebMvcConfigurer {
         // 2 添加fastjson 的配置信息
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         // 格式化 返回的json数据
+        fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
         fastJsonConfig.setSerializerFeatures(
-                SerializerFeature.PrettyFormat
+                SerializerFeature.PrettyFormat,
+                // 禁止循环引用，出现$.data...的情况
+                SerializerFeature.DisableCircularReferenceDetect
         );
         converter.setFastJsonConfig(fastJsonConfig);
         // 解决乱码的问题

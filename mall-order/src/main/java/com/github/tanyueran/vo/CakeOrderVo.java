@@ -16,4 +16,7 @@ public class CakeOrderVo extends CakeOrder {
 
     @ApiModelProperty("购买人")
     private User buyUser;
+
+    @ApiModelProperty("操作人")
+    private User actionUser;
 }

@@ -17,5 +17,21 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface CakeOrderMapper extends BaseMapper<CakeOrder> {
 
+    /**
+     * 分页查询订单
+     *
+     * @param page
+     * @param queryOrderListDto
+     * @return
+     */
     Page<CakeOrderVo> orderPageQuery(Page<CakeOrderVo> page, @Param("dto") QueryOrderListDto queryOrderListDto);
+
+
+    /**
+     * 查询个人订单总金额
+     *
+     * @param userId
+     * @return
+     */
+    Double totalMoneyByUserId(String userId);
 }

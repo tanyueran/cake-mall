@@ -12,4 +12,7 @@ public class QueryOrderListDto extends PageQueryDto {
     @ApiModelProperty("状态")
     private Integer status;
 
+    @ApiModelProperty("创建人id")
+    private String createUserId;
+
 }
