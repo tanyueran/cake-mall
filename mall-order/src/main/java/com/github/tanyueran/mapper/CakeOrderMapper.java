@@ -34,4 +34,12 @@ public interface CakeOrderMapper extends BaseMapper<CakeOrder> {
      * @return
      */
     Double totalMoneyByUserId(String userId);
+
+    /**
+     * 根据订单id查询订单详情
+     *
+     * @param orderId
+     * @return
+     */
+    CakeOrderVo selectOrderDetailById(String orderId);
 }

@@ -2,13 +2,12 @@ package com.github.tanyueran.service.imp;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.tanyueran.constant.OrderStatus;
 import com.github.tanyueran.dto.CreateOrderDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.entity.CakeOrder;
-import com.github.tanyueran.entity.CakeProduct;
 import com.github.tanyueran.entity.ResponseResult;
 import com.github.tanyueran.mapper.CakeOrderMapper;
 import com.github.tanyueran.service.CakeOrderService;
@@ -23,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -42,6 +42,14 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
 
     @Resource
     private CakeService cakeService;
+
+    @Override
+    public List<CakeOrder> getAllStatus0Order() {
+        QueryWrapper<CakeOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("status", OrderStatus.CREATED_NOT_MONEY.getStatus());
+        List<CakeOrder> cakeOrders = cakeOrderMapper.selectList(wrapper);
+        return cakeOrders;
+    }
 
     @Override
     public Boolean createOrder(CreateOrderDto createOrderDto) throws Exception {
@@ -91,5 +99,20 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
         vo.setTotalOrderNumber(count);
         vo.setTotalMoney(totalMoney);
         return vo;
+    }
+
+    @Override
+    public Boolean orderCreatedOvertime(String userId) {
+        CakeOrder cakeOrder = new CakeOrder();
+        cakeOrder.setId(userId);
+        cakeOrder.setStatus(OrderStatus.NOT_MONEY_ORDER_CANCEL.getStatus());
+        cakeOrder.setStatus5Time(new Date());
+        int i = cakeOrderMapper.updateById(cakeOrder);
+        return i == 1;
+    }
+
+    @Override
+    public CakeOrderVo getOrderInfoById(String orderId) {
+        return cakeOrderMapper.selectOrderDetailById(orderId);
     }
 }
