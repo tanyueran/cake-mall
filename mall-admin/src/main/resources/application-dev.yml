@@ -4,10 +4,13 @@ logging:
 
 spring:
   cloud:
+    alibaba:
+      seata:
+        tx-service-group: my_tx_group
     nacos:
       discovery:
+        server-addr: 192.168.150.130
         namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4
-        server-addr: 192.168.150.130:8848
   redis:
     host: 192.168.150.128
     port: 6379

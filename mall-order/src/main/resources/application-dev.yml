@@ -4,6 +4,9 @@ logging:
 
 spring:
   cloud:
+    alibaba:
+      seata:
+        tx-service-group: my_tx_group
     nacos:
       discovery:
         namespace: 8aab987e-15e5-404f-b27c-c12e6ebeefb4

@@ -3,6 +3,7 @@ package com.github.tanyueran.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.tanyueran.dto.CreateOrderDto;
+import com.github.tanyueran.dto.OrderPayDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.entity.CakeOrder;
 import com.github.tanyueran.vo.CakeOrderVo;
@@ -68,4 +69,12 @@ public interface CakeOrderService extends IService<CakeOrder> {
      * @return
      */
     CakeOrderVo getOrderInfoById(String orderId);
+
+    /**
+     * 订单付款及状态改变
+     *
+     * @param orderPayDto
+     * @return
+     */
+    Boolean order2Status10(OrderPayDto orderPayDto) throws Exception;
 }

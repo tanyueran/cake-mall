@@ -360,9 +360,12 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
 
     @Override
     public Boolean pay(PayDto payDto) throws Exception {
-        CakeUser cakeUser = cakeUserMapper.selectById(payDto.getCakeUserId());
+        QueryWrapper<CakeUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", payDto.getCakeUserId())
+                .eq("user_pwd", payDto.getUserPwd());
+        CakeUser cakeUser = cakeUserMapper.selectOne(wrapper);
         if (cakeUser == null) {
-            throw new Exception("该用户不存在");
+            throw new Exception("该用户不存在,或者密码错误");
         }
         if (cakeUser.getMoney() < payDto.getPayPrice()) {
             throw new Exception("余额不足");

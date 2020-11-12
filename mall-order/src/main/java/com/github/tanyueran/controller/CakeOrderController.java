@@ -4,6 +4,7 @@ package com.github.tanyueran.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.tanyueran.config.CreateOrderScheduleUtil;
 import com.github.tanyueran.dto.CreateOrderDto;
+import com.github.tanyueran.dto.OrderPayDto;
 import com.github.tanyueran.dto.OrderTaskDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.service.CakeOrderService;
@@ -68,5 +69,12 @@ public class CakeOrderController {
     @GetMapping("/orderDetail/{id}")
     public CakeOrderVo getOrderInfoByOrderId(@PathVariable("id") String orderId) {
         return cakeOrderService.getOrderInfoById(orderId);
+    }
+
+    @ApiOperation("订单付款")
+    @PostMapping("/order/pay")
+    public Boolean payMoney(@RequestBody @Valid OrderPayDto orderPayDto) throws Exception {
+        // todo:此处支付和状态改变应该是两个独立分开的，以后修改
+        return cakeOrderService.order2Status10(orderPayDto);
     }
 }

@@ -6,15 +6,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.tanyueran.constant.OrderStatus;
 import com.github.tanyueran.dto.CreateOrderDto;
+import com.github.tanyueran.dto.OrderPayDto;
+import com.github.tanyueran.dto.PayDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.entity.CakeOrder;
 import com.github.tanyueran.entity.ResponseResult;
 import com.github.tanyueran.mapper.CakeOrderMapper;
 import com.github.tanyueran.service.CakeOrderService;
 import com.github.tanyueran.service.CakeService;
+import com.github.tanyueran.service.CakeUserService;
 import com.github.tanyueran.vo.CakeOrderVo;
 import com.github.tanyueran.vo.CakeProductVo;
 import com.github.tanyueran.vo.OrderCollcetionInfoVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +43,9 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
 
     @Resource
     private CakeOrderMapper cakeOrderMapper;
+
+    @Resource
+    private CakeUserService cakeUserService;
 
     @Resource
     private CakeService cakeService;
@@ -114,5 +121,32 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
     @Override
     public CakeOrderVo getOrderInfoById(String orderId) {
         return cakeOrderMapper.selectOrderDetailById(orderId);
+    }
+
+    @Override
+    @GlobalTransactional(name = "order-pay-tx", rollbackFor = Exception.class)
+    public Boolean order2Status10(OrderPayDto orderPayDto) throws Exception {
+        // 查询出订单的金额
+        CakeOrder cakeOrder = cakeOrderMapper.selectById(orderPayDto.getOrderId());
+        if (cakeOrder == null) {
+            throw new Exception("订单不存在");
+        }
+        PayDto dto = orderPayDto.getPayDto();
+        dto.setPayPrice(cakeOrder.getPrice());
+        ResponseResult result = cakeUserService.pay(dto);
+        if (result.getCode() != 200) {
+            throw new Exception("付款出错:" + result.getMsg());
+        }
+        Boolean payOk = (Boolean) result.getData();
+        int j = 1/0;
+        if (payOk) {
+            CakeOrder order = new CakeOrder();
+            order.setId(orderPayDto.getOrderId());
+            order.setStatus(OrderStatus.PAID_WAITTING_SEND.getStatus());
+            order.setStatus10Time(new Date());
+            int i = cakeOrderMapper.updateById(order);
+            return i == 1;
+        }
+        return false;
     }
 }
