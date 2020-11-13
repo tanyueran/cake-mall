@@ -74,6 +74,18 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
     @Autowired
     private RedisTemplate redisTemplate;
 
+    // 获取redis 中的信息
+    public UserVo getUserInfo(String userCode) {
+        // 更新redis 的内容
+        UserVo vo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + userCode);
+        return vo;
+    }
+
+    // 更新redis 中信息
+    public void updateUserInfo(String userCode, UserVo vo) {
+        redisTemplate.opsForValue().set(redis_prefix + userCode, vo);
+    }
+
     public String loginUtil(CakeUser user) throws Exception {
         user.setUserPwd(null);
         CakeUserRole role = cakeUserRoleMapper.selectById(user.getCakeUserRoleId());
@@ -83,7 +95,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         userVo.setUser(u);
         userVo.setUserRole(r);
         // 保存到redis中
-        redisTemplate.opsForValue().set(redis_prefix + user.getUserCode(), userVo);
+        updateUserInfo(user.getUserCode(), userVo);
         // 返回token
         PrivateKey key = RsaUtil.getPrivateKey(this.privateKey);
         Map<String, String> map = new HashMap<>();
@@ -174,7 +186,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
 
     @Override
     public UserInfoVo getUserInfoByUserCode(String userCode) throws Exception {
-        UserVo userVo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + userCode);
+        UserVo userVo = getUserInfo(userCode);
         UserInfoVo userInfoVo = new UserInfoVo();
         userInfoVo.setCakeUser(JSONObject.parseObject(JSONObject.toJSONString(userVo.getUser()), CakeUser.class));
         userInfoVo.setCakeUserRole(JSONObject.parseObject(JSONObject.toJSONString(userVo.getUserRole()), CakeUserRole.class));
@@ -219,7 +231,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         int i = cakeUserMapper.updateById(cakeUser);
         Boolean isOk = i == 1;
         // 更新redis 的内容
-        UserVo vo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + cakeUserEditDto.getUserCode());
+        UserVo vo = getUserInfo(cakeUserEditDto.getUserCode());
 
         if (vo != null) {
             redisTemplate.delete(redis_prefix + cakeUserEditDto.getUserCode());
@@ -228,7 +240,7 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
             user.setUserCode(cakeUserEditDto.getUserCode());
             user.setHeadImg(cakeUserEditDto.getHeadImg());
             user.setNickname(cakeUserEditDto.getNickname());
-            redisTemplate.opsForValue().set(redis_prefix + cakeUserEditDto.getUserCode(), vo);
+            updateUserInfo(cakeUserEditDto.getUserCode(), vo);
         }
         return isOk;
     }
@@ -347,12 +359,12 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         Boolean b = i == 1;
         if (b) {
             // 更新redis 的内容
-            UserVo vo = (UserVo) redisTemplate.opsForValue().get(redis_prefix + cakeUser.getUserCode());
+            UserVo vo = getUserInfo(cakeUser.getUserCode());
             if (vo != null) {
                 redisTemplate.delete(redis_prefix + cakeUser.getUserCode());
                 User user = vo.getUser();
                 user.setMoney(cakeUser1.getMoney());
-                redisTemplate.opsForValue().set(redis_prefix + cakeUser.getUserCode(), vo);
+                updateUserInfo(cakeUser.getUserCode(), vo);
             }
         }
         return b;
@@ -377,6 +389,33 @@ public class CakeUserServiceImpl extends ServiceImpl<CakeUserMapper, CakeUser> i
         newUser.setId(cakeUser.getId());
         newUser.setMoney(subtract.doubleValue());
         int i = cakeUserMapper.updateById(newUser);
+        if (i == 1) {
+            // 更新redis
+            UserVo userInfo = getUserInfo(cakeUser.getUserCode());
+            userInfo.getUser().setMoney(subtract.doubleValue());
+            updateUserInfo(cakeUser.getUserCode(), userInfo);
+        }
+        return i == 1;
+    }
+
+    @Override
+    public Boolean getMoney(GetMoneyDto getMoneyDto) throws Exception {
+        if (getMoneyDto.getMoney() < 0) {
+            throw new Exception("收款金额不可为负数");
+        }
+        String userId = getMoneyDto.getUserId();
+        CakeUser cakeUser = cakeUserMapper.selectById(userId);
+        BigDecimal add = BigDecimal.valueOf(cakeUser.getMoney()).add(BigDecimal.valueOf(getMoneyDto.getMoney()));
+        CakeUser newUser = new CakeUser();
+        newUser.setId(getMoneyDto.getUserId());
+        newUser.setMoney(add.doubleValue());
+        int i = cakeUserMapper.updateById(newUser);
+        if (i == 1) {
+            // 更新redis
+            UserVo userInfo = getUserInfo(cakeUser.getUserCode());
+            userInfo.getUser().setMoney(add.doubleValue());
+            updateUserInfo(cakeUser.getUserCode(), userInfo);
+        }
         return i == 1;
     }
 }

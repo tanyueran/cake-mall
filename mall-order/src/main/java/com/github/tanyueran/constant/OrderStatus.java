@@ -13,9 +13,10 @@ public enum OrderStatus {
     * */
     CREATED_NOT_MONEY(0),
     NOT_MONEY_ORDER_CANCEL(5),
-    PAID_WAITTING_SEND(10),
+    PAID_WAITING_SEND(10),
     REFUSE_CANCEL(15),
-    SEND_WAITTING_GET(30),
+    GAVE_WAITING_SEND(20),
+    SEND_WAITING_GET(30),
     ORDER_SUCCESS(40);
 
     private Integer status;

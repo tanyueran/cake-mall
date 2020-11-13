@@ -140,4 +140,11 @@ public class CakeUserController {
         return cakeUserService.pay(payDto);
     }
 
+
+    @ApiOperation("收款")
+    @PostMapping("/getMoney")
+    public Boolean getMoney(@RequestBody @Valid GetMoneyDto getMoneyDto) throws Exception {
+        return cakeUserService.getMoney(getMoneyDto);
+    }
+
 }

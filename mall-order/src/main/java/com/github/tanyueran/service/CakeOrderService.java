@@ -3,11 +3,13 @@ package com.github.tanyueran.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.tanyueran.dto.CreateOrderDto;
+import com.github.tanyueran.dto.GiveOrderDto;
 import com.github.tanyueran.dto.OrderPayDto;
 import com.github.tanyueran.dto.QueryOrderListDto;
 import com.github.tanyueran.entity.CakeOrder;
 import com.github.tanyueran.vo.CakeOrderVo;
 import com.github.tanyueran.vo.OrderCollcetionInfoVo;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.List;
 
@@ -77,4 +79,38 @@ public interface CakeOrderService extends IService<CakeOrder> {
      * @return
      */
     Boolean order2Status10(OrderPayDto orderPayDto) throws Exception;
+
+
+    /**
+     * 管理员拒绝订单，并退款
+     *
+     * @param orderId
+     * @return
+     * @throws Exception
+     */
+    Boolean refuseOrder(String orderId) throws Exception;
+
+    /**
+     * 接受订单
+     *
+     * @param giveOrderDto
+     * @return
+     */
+    Boolean giveOrder(GiveOrderDto giveOrderDto) throws Exception;
+
+    /**
+     * 发货
+     *
+     * @param giveOrderDto
+     * @return
+     */
+    Boolean send(GiveOrderDto giveOrderDto) throws Exception;
+
+    /**
+     * 完成订单
+     *
+     * @param giveOrderDto
+     * @return
+     */
+    Boolean orderOver(GiveOrderDto giveOrderDto) throws Exception;
 }

@@ -3,16 +3,14 @@ package com.github.tanyueran.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.tanyueran.config.CreateOrderScheduleUtil;
-import com.github.tanyueran.dto.CreateOrderDto;
-import com.github.tanyueran.dto.OrderPayDto;
-import com.github.tanyueran.dto.OrderTaskDto;
-import com.github.tanyueran.dto.QueryOrderListDto;
+import com.github.tanyueran.dto.*;
 import com.github.tanyueran.service.CakeOrderService;
 import com.github.tanyueran.vo.CakeOrderVo;
 import com.github.tanyueran.vo.OrderCollcetionInfoVo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,6 +38,7 @@ public class CakeOrderController {
 
     @PostMapping("/create")
     @ApiOperation("创建订单")
+    @PreAuthorize("hasRole('user')")
     public Boolean createOrder(@RequestBody @Valid CreateOrderDto createOrderDto) throws Exception {
         Boolean ok = cakeOrderService.createOrder(createOrderDto);
         if (ok) {
@@ -73,8 +72,34 @@ public class CakeOrderController {
 
     @ApiOperation("订单付款")
     @PostMapping("/order/pay")
+    @PreAuthorize("hasRole('user')")
     public Boolean payMoney(@RequestBody @Valid OrderPayDto orderPayDto) throws Exception {
         // todo:此处支付和状态改变应该是两个独立分开的，以后修改
         return cakeOrderService.order2Status10(orderPayDto);
+    }
+
+    @ApiOperation("拒绝订单")
+    @PostMapping("/refuseOrder/{id}")
+    @PreAuthorize("hasRole('manager')")
+    public Boolean refuseOrder(@PathVariable("id") String orderId) throws Exception {
+        return cakeOrderService.refuseOrder(orderId);
+    }
+
+    @ApiOperation("接受订单")
+    @PostMapping("/giveOrder")
+    public Boolean giveOrder(@RequestBody @Valid GiveOrderDto giveOrderDto) throws Exception {
+        return cakeOrderService.giveOrder(giveOrderDto);
+    }
+
+    @ApiOperation("发货")
+    @PostMapping("/send")
+    public Boolean send(@RequestBody @Valid GiveOrderDto giveOrderDto) throws Exception {
+        return cakeOrderService.send(giveOrderDto);
+    }
+
+    @ApiOperation("订单完成")
+    @PostMapping("/orderOver")
+    public Boolean orderOver(@RequestBody @Valid GiveOrderDto giveOrderDto) throws Exception {
+        return cakeOrderService.orderOver(giveOrderDto);
     }
 }

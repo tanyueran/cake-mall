@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.tanyueran.constant.OrderStatus;
-import com.github.tanyueran.dto.CreateOrderDto;
-import com.github.tanyueran.dto.OrderPayDto;
-import com.github.tanyueran.dto.PayDto;
-import com.github.tanyueran.dto.QueryOrderListDto;
+import com.github.tanyueran.dto.*;
 import com.github.tanyueran.entity.CakeOrder;
 import com.github.tanyueran.entity.ResponseResult;
 import com.github.tanyueran.mapper.CakeOrderMapper;
@@ -132,21 +129,100 @@ public class CakeOrderServiceImpl extends ServiceImpl<CakeOrderMapper, CakeOrder
             throw new Exception("订单不存在");
         }
         PayDto dto = orderPayDto.getPayDto();
-        dto.setPayPrice(cakeOrder.getPrice());
+        dto.setPayPrice(cakeOrder.getTotalPrice());
         ResponseResult result = cakeUserService.pay(dto);
         if (result.getCode() != 200) {
             throw new Exception("付款出错:" + result.getMsg());
         }
         Boolean payOk = (Boolean) result.getData();
-        int j = 1/0;
         if (payOk) {
             CakeOrder order = new CakeOrder();
             order.setId(orderPayDto.getOrderId());
-            order.setStatus(OrderStatus.PAID_WAITTING_SEND.getStatus());
+            order.setStatus(OrderStatus.PAID_WAITING_SEND.getStatus());
             order.setStatus10Time(new Date());
             int i = cakeOrderMapper.updateById(order);
             return i == 1;
         }
         return false;
+    }
+
+    @Override
+    @GlobalTransactional(name = "refuse-order-tx", rollbackFor = Exception.class)
+    public Boolean refuseOrder(String orderId) throws Exception {
+        CakeOrder cakeOrder = cakeOrderMapper.selectById(orderId);
+        if (cakeOrder.getStatus() != OrderStatus.PAID_WAITING_SEND.getStatus()) {
+            throw new Exception("该订单不可拒绝");
+        }
+        // 退钱
+        GetMoneyDto dto = new GetMoneyDto();
+        dto.setMoney(cakeOrder.getTotalPrice());
+        dto.setUserId(cakeOrder.getCreateUserId());
+        ResponseResult body = cakeUserService.getMoney(dto);
+        Boolean ok = (Boolean) body.getData();
+        // 修改状态
+        if (ok) {
+            CakeOrder order = new CakeOrder();
+            order.setId(cakeOrder.getId());
+            order.setStatus(OrderStatus.REFUSE_CANCEL.getStatus());
+            order.setStatus15Time(new Date());
+            int i = cakeOrderMapper.updateById(order);
+            return i == 1;
+        } else {
+            throw new Exception("退款失败");
+        }
+    }
+
+    @Override
+    public Boolean giveOrder(GiveOrderDto giveOrderDto) throws Exception {
+        CakeOrder cakeOrder = cakeOrderMapper.selectById(giveOrderDto.getOrderId());
+        if (cakeOrder == null) {
+            throw new Exception("订单不存在");
+        }
+        if (cakeOrder.getStatus() != OrderStatus.PAID_WAITING_SEND.getStatus()) {
+            throw new Exception("该订单状态不可操作接受订单");
+        }
+        CakeOrder order = new CakeOrder();
+        order.setId(cakeOrder.getId());
+        order.setActionUserId(giveOrderDto.getUserId());
+        order.setStatus(OrderStatus.GAVE_WAITING_SEND.getStatus());
+        order.setStatus20Time(new Date());
+        int i = cakeOrderMapper.updateById(order);
+        return i == 1;
+    }
+
+    @Override
+    public Boolean send(GiveOrderDto giveOrderDto) throws Exception {
+        CakeOrder cakeOrder = cakeOrderMapper.selectById(giveOrderDto.getOrderId());
+        if (cakeOrder == null) {
+            throw new Exception("订单不存在");
+        }
+        if (cakeOrder.getStatus() != OrderStatus.GAVE_WAITING_SEND.getStatus()) {
+            throw new Exception("该订单状态不可操作发货");
+        }
+        CakeOrder order = new CakeOrder();
+        order.setId(cakeOrder.getId());
+        order.setActionUserId(giveOrderDto.getUserId());
+        order.setStatus(OrderStatus.SEND_WAITING_GET.getStatus());
+        order.setStatus30Time(new Date());
+        int i = cakeOrderMapper.updateById(order);
+        return i == 1;
+    }
+
+    @Override
+    public Boolean orderOver(GiveOrderDto giveOrderDto) throws Exception {
+        CakeOrder cakeOrder = cakeOrderMapper.selectById(giveOrderDto.getOrderId());
+        if (cakeOrder == null) {
+            throw new Exception("订单不存在");
+        }
+        if (cakeOrder.getStatus() != OrderStatus.SEND_WAITING_GET.getStatus()) {
+            throw new Exception("该订单状态不可操作完成");
+        }
+        CakeOrder order = new CakeOrder();
+        order.setId(cakeOrder.getId());
+        order.setActionUserId(giveOrderDto.getUserId());
+        order.setStatus(OrderStatus.ORDER_SUCCESS.getStatus());
+        order.setStatus40Time(new Date());
+        int i = cakeOrderMapper.updateById(order);
+        return i == 1;
     }
 }

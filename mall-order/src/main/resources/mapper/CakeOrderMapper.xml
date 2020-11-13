@@ -79,18 +79,18 @@
         <include refid="detail_sql"/>
         FROM
         `cake_order`
-        <if test="dto.status and dto.createUserId">
+        <if test="(dto.status != null) and dto.createUserId">
             <where>
                 status = #{dto.status}
                 and create_user_id = #{dto.createUserId}
             </where>
         </if>
-        <if test="!dto.status and dto.createUserId">
+        <if test="(dto.status == null) and dto.createUserId">
             <where>
                 create_user_id = #{dto.createUserId}
             </where>
         </if>
-        <if test="dto.status and !dto.createUserId">
+        <if test="(dto.status != null) and !dto.createUserId">
             <where>
                 status = #{dto.status}
             </where>

@@ -135,4 +135,13 @@ public interface CakeUserService extends IService<CakeUser> {
      */
     Boolean pay(PayDto payDto) throws Exception;
 
+    /**
+     * 收款
+     *
+     * @param getMoneyDto
+     * @return
+     * @throws Exception
+     */
+    Boolean getMoney(GetMoneyDto getMoneyDto) throws Exception;
+
 }
