@@ -33,6 +33,10 @@ feign:
   hystrix:
     enabled: false
 
+logging:
+  file:
+    name: /opt/cake-mall/log/order-log.log
+
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   configuration:

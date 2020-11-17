@@ -53,6 +53,10 @@ self:
   # 账号保存的redis的前缀
   user_prefix: MALL-SYS_
 
+logging:
+  file:
+    name: /opt/cake-mall/log/gateway-log.log
+
 ---
 # 开发环境
 spring:

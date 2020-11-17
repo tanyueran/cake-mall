@@ -32,6 +32,10 @@ spring:
       useGlobalDataSourceStat: true
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
+logging:
+  file:
+    name: /opt/cake-mall/log/utils-log.log
+
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   configuration:

@@ -6,7 +6,7 @@
     <artifactId>cake-mall</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cloud-order</name>
+    <name>cake-mall</name>
     <description>蛋糕商城</description>
 
     <properties>
